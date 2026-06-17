@@ -1,0 +1,29 @@
+OCR-LEITOR v1 — STATUS OK
+
+Data: 17/06/2026
+
+Validação realizada na máquina do serviço.
+
+Resultados:
+- Tesseract localizado e funcionando.
+- OCR executou em imagem real.
+- Item criado no Monday.
+- Coluna ARQUIVO NF-e criada no Monday.
+- Upload da imagem NF-e realizado com sucesso.
+- Arquivo processado corretamente.
+
+Board Monday:
+Duplicata de PS CALDEIRA - NF-e
+
+Colunas principais:
+- NUMERO NF-e: numeric_mkrscq8v
+- CH.ACESSO: text_mm1qqv4j
+- VENCIMENTO: date_mky1yfhg
+- ARQUIVO NF-e: file_mm4ds7mw
+
+Status:
+ESTÁVEL PARA PRODUÇÃO LEVE
+
+Próximo cuidado:
+Não alterar código sem backup.
+Testar sempre com 1 imagem antes de rodar lote.

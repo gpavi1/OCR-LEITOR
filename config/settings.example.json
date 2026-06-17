@@ -1,0 +1,17 @@
+﻿{
+  "tesseract_path": "C:/Program Files/Tesseract-OCR/tesseract.exe",
+  "monday": {
+    "api_token": "COLE_SEU_TOKEN_AQUI",
+    "board_id": "18418068762",
+    "columns": {
+      "nfe": "numeric_mkrscq8v",
+      "chave": "text_mm1qqv4j",
+      "vencimento": "date_mky1yfhg",
+      "arquivo": "file_mm4ds7mw"
+    }
+  },
+  "ocr": {
+    "language": "por+eng",
+    "psm": 6
+  }
+}

@@ -51,3 +51,27 @@ env/
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Config sensivel
+config/settings.json
+config/settings_BACKUP.json
+
+# Documentos reais
+input/*
+processed/*
+erro/*
+logs/*
+
+# Python/local
+.venv/
+.pytest_cache/
+__pycache__/
+*.pyc
+
+# Scripts locais de diagnostico
+criar_coluna_arquivo.py
+listar_colunas.py
+listar_colunas_monday.py
+test_monday.py
+test_monday_auth.py
+test_monday_create.py
