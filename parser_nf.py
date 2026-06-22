@@ -134,6 +134,187 @@ def extrair_vencimento_financeiro(texto: str):
     return candidatos[0][2]
 
 
+
+
+EMPRESA_SUFFIX_LINES = {"LTDA", "LTDA.", "ME", "EIRELI", "EPP", "S/A", "SA"}
+
+EMPRESA_CABECALHOS_BLOQUEADOS = [
+    "DANFE",
+    "NOTA FISCAL ELETRONICA",
+    "DOCUMENTO AUXILIAR",
+    "NATUREZA DA OPERACAO",
+    "PROTOCOLO DE AUTORIZACAO",
+    "INSCRICAO ESTADUAL",
+    "DESTINATARIO",
+    "REMETENTE",
+    "NOME / RAZAO SOCIAL",
+    "ENDERECO",
+    "BAIRRO",
+    "MUNICIPIO",
+    "FATURAS",
+    "DUPLICATAS",
+    "CALCULO DO IMPOSTO",
+    "BASE DE CALCULO",
+    "VALOR DO ICMS",
+    "VALOR TOTAL",
+    "CHAVE DE ACESSO",
+    "CONSULTA DE AUTENTICIDADE",
+    "SEFAZ",
+    "FOLHA",
+    "SERIE",
+]
+
+
+def _limpar_espacos(texto: str) -> str:
+    return re.sub(r"\s+", " ", (texto or "").strip())
+
+
+def _eh_cabecalho_fiscal(linha_norm: str) -> bool:
+    if not linha_norm or len(linha_norm) < 3:
+        return True
+    if any(cab in linha_norm for cab in EMPRESA_CABECALHOS_BLOQUEADOS):
+        return True
+    if re.search(r"\d", linha_norm):
+        return True
+    return False
+
+
+def _parece_nome_empresa(candidato_norm: str) -> bool:
+    candidato_norm = _limpar_espacos(candidato_norm)
+    if _eh_cabecalho_fiscal(candidato_norm):
+        return False
+
+    palavras = [p for p in candidato_norm.split(" ") if p]
+    if len(palavras) < 2:
+        return False
+
+    tem_sufixo = any(
+        candidato_norm.endswith(f" {sufixo}") or candidato_norm == sufixo
+        for sufixo in EMPRESA_SUFFIX_LINES
+    )
+    if tem_sufixo:
+        return True
+
+    return len(palavras) >= 3 and len(candidato_norm) >= 12
+
+
+def extrair_empresa(texto: str):
+    if not texto:
+        return None
+
+    linhas = [_limpar_espacos(linha) for linha in texto.splitlines()]
+    linhas = [linha for linha in linhas if linha]
+
+    # Emitente normalmente fica no topo da nota.
+    # Limitamos a busca para evitar pegar destinatario/remetente.
+    limite = linhas[:60]
+
+    for idx, linha in enumerate(limite):
+        linha_norm = _normalizar_texto(linha)
+        if _eh_cabecalho_fiscal(linha_norm):
+            continue
+
+        proxima_norm = ""
+        if idx + 1 < len(limite):
+            proxima_norm = _normalizar_texto(limite[idx + 1])
+
+        candidato = linha_norm
+
+        # Caso comum em NF: nome em uma linha e LTDA/ME/EIRELI na linha seguinte.
+        if proxima_norm in EMPRESA_SUFFIX_LINES:
+            candidato = f"{linha_norm} {proxima_norm.replace('.', '')}"
+
+        candidato = _limpar_espacos(candidato)
+
+        if _parece_nome_empresa(candidato):
+            return candidato
+
+    return None
+
+
+def extrair_numero_nf(texto: str):
+    if not texto:
+        return None
+
+    texto_norm = _normalizar_texto(texto)
+
+    # Número da nota normalmente aparece no cabeçalho.
+    # Limitar evita pegar protocolo, CNPJ, fatura ou chave.
+    janela_inicial = texto_norm[:2500]
+
+    padroes_contextuais = [
+        r"\bNRO\s*[:\-]?\s*(\d{1,9})\b",
+        r"\bN[º°O]\s*[:\-]?\s*(\d{1,9})\b",
+        r"\bNUMERO\s*(?:DA\s*)?(?:NF|NOTA)?\s*[:\-]?\s*(\d{1,9})\b",
+        r"\bNF\s*[:\-]?\s*(\d{1,9})\b",
+        r"\bNOTA\s+FISCAL\s*(?:NRO|N[º°O]|NUMERO)?\s*[:\-]?\s*(\d{1,9})\b",
+    ]
+
+    for padrao in padroes_contextuais:
+        for match in re.finditer(padrao, janela_inicial):
+            numero = re.sub(r"\D", "", match.group(1))
+            if not numero:
+                continue
+
+            # Evita aceitar ano como número da NF.
+            if re.fullmatch(r"(?:19|20)\d{2}", numero):
+                continue
+
+            return numero
+
+    return None
+
+
+
+def _parse_valor_brl(valor: str):
+    if not valor:
+        return None
+
+    valor = valor.strip()
+    valor = valor.replace("R$", "").replace(" ", "")
+
+    # Formato BR: 1.234,56 ou 656,30
+    if "," in valor:
+        valor = valor.replace(".", "").replace(",", ".")
+    else:
+        # evita aceitar números longos sem centavos como valor
+        if len(re.sub(r"\D", "", valor)) > 6:
+            return None
+
+    try:
+        return float(valor)
+    except ValueError:
+        return None
+
+
+def extrair_valor_total(texto: str):
+    if not texto:
+        return None
+
+    texto_norm = _normalizar_texto(texto)
+
+    padroes = [
+        r"VALOR\s+TOTAL\s+DA\s+NOTA\s+FISCAL\s*[\r\n\s]+(?:R\$)?\s*([0-9]{1,3}(?:\.[0-9]{3})*,[0-9]{2}|[0-9]+,[0-9]{2})",
+        r"VALOR\s+TOTAL\s+DA\s+NOTA\s*[\r\n\s]+(?:R\$)?\s*([0-9]{1,3}(?:\.[0-9]{3})*,[0-9]{2}|[0-9]+,[0-9]{2})",
+        r"TOTAL\s+DA\s+NOTA\s+FISCAL\s*[\r\n\s]+(?:R\$)?\s*([0-9]{1,3}(?:\.[0-9]{3})*,[0-9]{2}|[0-9]+,[0-9]{2})",
+    ]
+
+    for padrao in padroes:
+        match = re.search(padrao, texto_norm, flags=re.IGNORECASE)
+        if match:
+            return _parse_valor_brl(match.group(1))
+
+    # Fallback controlado: procura a linha do rótulo e pega o próximo valor monetário.
+    linhas = [_normalizar_texto(linha) for linha in texto.splitlines()]
+    for idx, linha in enumerate(linhas):
+        if "VALOR TOTAL DA NOTA FISCAL" in linha or "VALOR TOTAL DA NOTA" in linha:
+            janela = " ".join(linhas[idx:idx + 4])
+            valores = re.findall(r"(?:R\$)?\s*([0-9]{1,3}(?:\.[0-9]{3})*,[0-9]{2}|[0-9]+,[0-9]{2})", janela)
+            if valores:
+                return _parse_valor_brl(valores[-1])
+
+    return None
+
 def parse_ocr(text):
     data = {
         "elemento": None,
@@ -143,15 +324,9 @@ def parse_ocr(text):
         "raw": text,
     }
 
-    for line in text.split("\n"):
-        line_clean = line.strip()
-        if len(line_clean) > 5 and line_clean.isupper() and not re.search(r"\d", line_clean):
-            data["elemento"] = line_clean
-            break
-
-    nfe_candidates = re.findall(r"\b\d{6,15}\b", text)
-    if nfe_candidates:
-        data["nfe"] = max(nfe_candidates, key=len)
+    data["elemento"] = extrair_empresa(text)
+    data["nfe"] = extrair_numero_nf(text)
+    data["valor_total"] = extrair_valor_total(text)
 
     data["chave"] = extrair_chave_acesso(text)
     data["vencimento"] = extrair_vencimento_financeiro(text)

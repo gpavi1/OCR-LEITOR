@@ -75,3 +75,24 @@ listar_colunas_monday.py
 test_monday.py
 test_monday_auth.py
 test_monday_create.py
+
+# OCR local / segurança
+.env
+.env.*
+!.env.example
+
+# Saídas e arquivos processados
+output/
+input/
+processed/
+erro/
+logs/
+
+# Cache / temporários
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# Backups e scripts temporários de patch
+*.bak*
+aplicar_patch_*.py
