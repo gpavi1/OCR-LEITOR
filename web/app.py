@@ -2,13 +2,13 @@
 import json
 import sys
 
-from flask import Flask, render_template, abort
+from flask import Flask, render_template, abort, redirect, url_for, request
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-from database.mysql_db import fetch_all, fetch_one
+from database.mysql_db import fetch_all, fetch_one, execute
 
 
 app = Flask(__name__)
@@ -99,6 +99,61 @@ def documento_detalhe(documento_id):
         json_text=json_text,
         texto_ocr=texto_ocr
     )
+
+
+
+@app.route("/documentos/<int:documento_id>/revisar", methods=["POST"])
+def revisar_documento(documento_id):
+    documento = fetch_one("""
+        SELECT id
+        FROM documentos
+        WHERE id = %s
+    """, (documento_id,))
+
+    if not documento:
+        abort(404)
+
+    observacao = request.form.get("observacao_revisao") or None
+
+    execute("""
+        UPDATE documentos
+        SET
+            revisado = TRUE,
+            revisado_por = %s,
+            revisado_em = NOW(),
+            observacao_revisao = %s,
+            status = CASE
+                WHEN status = 'pendente_revisao' THEN 'pendente_integracao'
+                ELSE status
+            END
+        WHERE id = %s
+    """, ("operador_local", observacao, documento_id))
+
+    return redirect(url_for("documento_detalhe", documento_id=documento_id))
+
+
+@app.route("/documentos/<int:documento_id>/desfazer-revisao", methods=["POST"])
+def desfazer_revisao_documento(documento_id):
+    documento = fetch_one("""
+        SELECT id
+        FROM documentos
+        WHERE id = %s
+    """, (documento_id,))
+
+    if not documento:
+        abort(404)
+
+    execute("""
+        UPDATE documentos
+        SET
+            revisado = FALSE,
+            revisado_por = NULL,
+            revisado_em = NULL,
+            observacao_revisao = NULL
+        WHERE id = %s
+    """, (documento_id,))
+
+    return redirect(url_for("documento_detalhe", documento_id=documento_id))
 
 
 if __name__ == "__main__":

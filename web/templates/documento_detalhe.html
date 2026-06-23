@@ -80,6 +80,32 @@
     </div>
 </section>
 
+
+<section class="panel">
+    <div class="panel-title">
+        <h2>Revisão humana</h2>
+    </div>
+
+    {% if documento.revisado %}
+        <p class="review-ok">Documento revisado por {{ documento.revisado_por or "operador" }} em {{ documento.revisado_em }}.</p>
+
+        {% if documento.observacao_revisao %}
+            <p class="review-note">{{ documento.observacao_revisao }}</p>
+        {% endif %}
+
+        <form method="post" action="/documentos/{{ documento.id }}/desfazer-revisao">
+            <button class="btn secondary" type="submit">desfazer revisão</button>
+        </form>
+    {% else %}
+        <form method="post" action="/documentos/{{ documento.id }}/revisar" class="review-form">
+            <label for="observacao_revisao">Observação da revisão</label>
+            <textarea id="observacao_revisao" name="observacao_revisao" rows="3" placeholder="Ex.: dados conferidos com a nota original"></textarea>
+
+            <button class="btn" type="submit">marcar como revisado</button>
+        </form>
+    {% endif %}
+</section>
+
 <section class="panel">
     <div class="panel-title">
         <h2>JSON padrão</h2>
