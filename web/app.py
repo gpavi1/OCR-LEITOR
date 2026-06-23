@@ -291,7 +291,7 @@ def editar_documento(documento_id):
             chave_acesso = %s,
             vencimento = %s,
             valor_total = %s,
-            observacao_revisao = %s,
+            observacao_revisao = COALESCE(%s, observacao_revisao),
             status = CASE
                 WHEN revisado = TRUE THEN status
                 ELSE 'pendente_revisao'
@@ -329,7 +329,7 @@ def revisar_documento(documento_id):
             revisado = TRUE,
             revisado_por = %s,
             revisado_em = NOW(),
-            observacao_revisao = %s,
+            observacao_revisao = COALESCE(%s, observacao_revisao),
             status = CASE
                 WHEN status = 'pendente_revisao' THEN 'pendente_integracao'
                 ELSE status
