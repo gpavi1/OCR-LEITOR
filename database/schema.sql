@@ -35,6 +35,11 @@ CREATE TABLE IF NOT EXISTS documentos (
     vencimento DATE NULL,
     valor_total DECIMAL(12,2) NULL,
     status VARCHAR(50) NOT NULL DEFAULT 'recebido',
+
+    revisado BOOLEAN NOT NULL DEFAULT FALSE,
+    revisado_por VARCHAR(120) NULL,
+    revisado_em DATETIME NULL,
+    observacao_revisao TEXT NULL,
     json_path TEXT NULL,
     ultimo_erro TEXT NULL,
     tentativas INT NOT NULL DEFAULT 0,
