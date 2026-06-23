@@ -1,8 +1,10 @@
 ﻿from pathlib import Path
 import json
+import csv
 import sys
+from io import StringIO
 
-from flask import Flask, render_template, abort, redirect, url_for, request
+from flask import Flask, render_template, abort, redirect, url_for, request, Response
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
@@ -57,6 +59,84 @@ def index():
         "documentos.html",
         documentos=documentos,
         resumo=resumo
+    )
+
+
+
+@app.route("/exportar/documentos.csv")
+def exportar_documentos_csv():
+    documentos = fetch_all("""
+        SELECT
+            id,
+            cliente_id,
+            arquivo_nome,
+            empresa,
+            numero_nf,
+            chave_acesso,
+            vencimento,
+            valor_total,
+            status,
+            revisado,
+            revisado_por,
+            revisado_em,
+            observacao_revisao,
+            json_path,
+            criado_em,
+            atualizado_em
+        FROM documentos
+        ORDER BY id DESC
+    """)
+
+    output = StringIO()
+    writer = csv.writer(output, delimiter=";", lineterminator="\n")
+
+    writer.writerow([
+        "id",
+        "cliente_id",
+        "arquivo_nome",
+        "empresa",
+        "numero_nf",
+        "chave_acesso",
+        "vencimento",
+        "valor_total",
+        "status",
+        "revisado",
+        "revisado_por",
+        "revisado_em",
+        "observacao_revisao",
+        "json_path",
+        "criado_em",
+        "atualizado_em",
+    ])
+
+    for doc in documentos:
+        writer.writerow([
+            doc.get("id"),
+            doc.get("cliente_id"),
+            doc.get("arquivo_nome"),
+            doc.get("empresa"),
+            doc.get("numero_nf"),
+            doc.get("chave_acesso"),
+            doc.get("vencimento"),
+            doc.get("valor_total"),
+            doc.get("status"),
+            "sim" if doc.get("revisado") else "nao",
+            doc.get("revisado_por"),
+            doc.get("revisado_em"),
+            doc.get("observacao_revisao"),
+            doc.get("json_path"),
+            doc.get("criado_em"),
+            doc.get("atualizado_em"),
+        ])
+
+    csv_text = "\ufeff" + output.getvalue()
+
+    return Response(
+        csv_text,
+        mimetype="text/csv; charset=utf-8",
+        headers={
+            "Content-Disposition": "attachment; filename=ocr_documentos.csv"
+        }
     )
 
 
