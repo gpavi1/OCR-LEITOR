@@ -1,0 +1,90 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+<header class="page-header">
+    <div>
+        <p class="eyebrow">OCR-S1E-B</p>
+        <h1>Documentos processados</h1>
+        <p class="subtitle">Painel local para validação dos resultados do OCR.</p>
+    </div>
+</header>
+
+<section class="cards">
+    <div class="card">
+        <span>Total</span>
+        <strong>{{ resumo.total or 0 }}</strong>
+    </div>
+    <div class="card">
+        <span>Pendente integração</span>
+        <strong>{{ resumo.pendente_integracao or 0 }}</strong>
+    </div>
+    <div class="card">
+        <span>Pendente revisão</span>
+        <strong>{{ resumo.pendente_revisao or 0 }}</strong>
+    </div>
+    <div class="card">
+        <span>Erros</span>
+        <strong>{{ resumo.erros or 0 }}</strong>
+    </div>
+    <div class="card">
+        <span>Revisados</span>
+        <strong>{{ resumo.revisados or 0 }}</strong>
+    </div>
+</section>
+
+<section class="panel">
+    <div class="panel-title">
+        <h2>Últimos documentos</h2>
+        <span>limite: 100</span>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Arquivo</th>
+                    <th>Empresa</th>
+                    <th>NF</th>
+                    <th>Vencimento</th>
+                    <th>Valor</th>
+                    <th>Status</th>
+                    <th>Revisado</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in documentos %}
+                <tr>
+                    <td>{{ doc.id }}</td>
+                    <td class="file-cell">{{ doc.arquivo_nome }}</td>
+                    <td>{{ doc.empresa or "-" }}</td>
+                    <td>{{ doc.numero_nf or "-" }}</td>
+                    <td>{{ doc.vencimento or "-" }}</td>
+                    <td>
+                        {% if doc.valor_total is not none %}
+                            R$ {{ "%.2f"|format(doc.valor_total) }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td><span class="badge status-{{ doc.status }}">{{ doc.status }}</span></td>
+                    <td>
+                        {% if doc.revisado %}
+                            <span class="badge ok">sim</span>
+                        {% else %}
+                            <span class="badge muted">não</span>
+                        {% endif %}
+                    </td>
+                    <td><a class="btn" href="/documentos/{{ doc.id }}">abrir</a></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="9" class="empty">Nenhum documento processado ainda.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

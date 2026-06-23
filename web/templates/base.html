@@ -1,0 +1,37 @@
+﻿<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <title>OCR-LEITOR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-mark">OCR</div>
+                <div>
+                    <strong>OCR-LEITOR</strong>
+                    <span>painel local</span>
+                </div>
+            </div>
+
+            <nav>
+                <a href="/">Documentos</a>
+                <a href="/health" target="_blank">Health</a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <span>Modo seguro</span>
+                <strong>Read-only</strong>
+            </div>
+        </aside>
+
+        <main class="content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,106 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+<header class="page-header">
+    <div>
+        <p class="eyebrow">Documento #{{ documento.id }}</p>
+        <h1>{{ documento.arquivo_nome }}</h1>
+        <p class="subtitle">Detalhe do processamento OCR.</p>
+    </div>
+
+    <a class="btn secondary" href="/">voltar</a>
+</header>
+
+<section class="detail-grid">
+    <div class="panel">
+        <div class="panel-title">
+            <h2>Campos extraídos</h2>
+        </div>
+
+        <dl class="details">
+            <dt>Cliente ID</dt>
+            <dd>{{ documento.cliente_id }}</dd>
+
+            <dt>Empresa</dt>
+            <dd>{{ documento.empresa or "-" }}</dd>
+
+            <dt>Número NF</dt>
+            <dd>{{ documento.numero_nf or "-" }}</dd>
+
+            <dt>Chave de acesso</dt>
+            <dd class="mono">{{ documento.chave_acesso or "-" }}</dd>
+
+            <dt>Vencimento</dt>
+            <dd>{{ documento.vencimento or "-" }}</dd>
+
+            <dt>Valor total</dt>
+            <dd>
+                {% if documento.valor_total is not none %}
+                    R$ {{ "%.2f"|format(documento.valor_total) }}
+                {% else %}
+                    -
+                {% endif %}
+            </dd>
+
+            <dt>Status</dt>
+            <dd><span class="badge status-{{ documento.status }}">{{ documento.status }}</span></dd>
+
+            <dt>Revisado</dt>
+            <dd>
+                {% if documento.revisado %}
+                    <span class="badge ok">sim</span>
+                {% else %}
+                    <span class="badge muted">não</span>
+                {% endif %}
+            </dd>
+
+            <dt>JSON</dt>
+            <dd class="small-path">{{ documento.json_path or "-" }}</dd>
+        </dl>
+    </div>
+
+    <div class="panel">
+        <div class="panel-title">
+            <h2>Arquivo</h2>
+        </div>
+
+        <dl class="details">
+            <dt>Origem</dt>
+            <dd class="small-path">{{ documento.arquivo_origem or "-" }}</dd>
+
+            <dt>Destino</dt>
+            <dd class="small-path">{{ documento.arquivo_destino or "-" }}</dd>
+
+            <dt>Hash</dt>
+            <dd class="mono small-path">{{ documento.arquivo_hash or "-" }}</dd>
+
+            <dt>Erro</dt>
+            <dd>{{ documento.ultimo_erro or "-" }}</dd>
+        </dl>
+    </div>
+</section>
+
+<section class="panel">
+    <div class="panel-title">
+        <h2>JSON padrão</h2>
+    </div>
+
+    {% if json_text %}
+        <pre>{{ json_text }}</pre>
+    {% else %}
+        <p class="empty">JSON não encontrado.</p>
+    {% endif %}
+</section>
+
+<section class="panel">
+    <div class="panel-title">
+        <h2>Texto OCR bruto</h2>
+    </div>
+
+    {% if texto_ocr %}
+        <pre>{{ texto_ocr }}</pre>
+    {% else %}
+        <p class="empty">Texto OCR não encontrado.</p>
+    {% endif %}
+</section>
+{% endblock %}
