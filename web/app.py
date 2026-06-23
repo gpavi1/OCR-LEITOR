@@ -1,10 +1,12 @@
 ﻿from pathlib import Path
 import json
+import os
+import hmac
 import csv
 import sys
 from io import StringIO
 
-from flask import Flask, render_template, abort, redirect, url_for, request, Response
+from flask import Flask, render_template, abort, redirect, url_for, request, session, Response
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
@@ -14,6 +16,57 @@ from database.mysql_db import fetch_all, fetch_one, execute
 
 
 app = Flask(__name__)
+app.secret_key = os.getenv("WEB_SECRET_KEY", "ocr-leitor-local-dev")
+
+
+
+
+def _web_credentials():
+    return (
+        os.getenv("WEB_USERNAME", "admin"),
+        os.getenv("WEB_PASSWORD", "admin")
+    )
+
+
+@app.before_request
+def exigir_login():
+    rotas_livres = {"login", "static", "health"}
+    if request.endpoint in rotas_livres:
+        return None
+
+    if not session.get("autenticado"):
+        return redirect(url_for("login"))
+
+    return None
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    erro = None
+
+    if request.method == "POST":
+        username = request.form.get("username", "")
+        password = request.form.get("password", "")
+
+        expected_user, expected_password = _web_credentials()
+
+        usuario_ok = hmac.compare_digest(username, expected_user)
+        senha_ok = hmac.compare_digest(password, expected_password)
+
+        if usuario_ok and senha_ok:
+            session["autenticado"] = True
+            session["usuario"] = username
+            return redirect(url_for("index"))
+
+        erro = "Usuário ou senha inválidos."
+
+    return render_template("login.html", erro=erro)
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
 
 
 @app.route("/health")

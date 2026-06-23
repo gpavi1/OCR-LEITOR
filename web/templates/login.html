@@ -1,0 +1,30 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+<div class="login-wrap">
+    <form method="post" class="login-card">
+        <div class="brand login-brand">
+            <div class="brand-mark">OCR</div>
+            <div>
+                <strong>OCR-LEITOR</strong>
+                <span>acesso local</span>
+            </div>
+        </div>
+
+        <h1>Entrar no painel</h1>
+        <p class="subtitle">Acesso protegido para validação interna.</p>
+
+        {% if erro %}
+            <div class="alert-error">{{ erro }}</div>
+        {% endif %}
+
+        <label>Usuário</label>
+        <input type="text" name="username" autocomplete="username" required>
+
+        <label>Senha</label>
+        <input type="password" name="password" autocomplete="current-password" required>
+
+        <button class="btn" type="submit">entrar</button>
+    </form>
+</div>
+{% endblock %}
