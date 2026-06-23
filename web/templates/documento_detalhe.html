@@ -81,6 +81,54 @@
 </section>
 
 
+
+<section class="panel">
+    <div class="panel-title">
+        <h2>Correção manual dos campos</h2>
+        <span>salva no MySQL</span>
+    </div>
+
+    <form method="post" action="/documentos/{{ documento.id }}/editar" class="edit-form">
+        <div class="form-grid">
+            <div class="form-field">
+                <label for="empresa">Empresa</label>
+                <input id="empresa" name="empresa" type="text" value="{{ documento.empresa or '' }}">
+            </div>
+
+            <div class="form-field">
+                <label for="numero_nf">Número NF</label>
+                <input id="numero_nf" name="numero_nf" type="text" value="{{ documento.numero_nf or '' }}">
+            </div>
+
+            <div class="form-field full">
+                <label for="chave_acesso">Chave de acesso</label>
+                <input id="chave_acesso" name="chave_acesso" type="text" value="{{ documento.chave_acesso or '' }}">
+            </div>
+
+            <div class="form-field">
+                <label for="vencimento">Vencimento</label>
+                <input id="vencimento" name="vencimento" type="date" value="{{ documento.vencimento or '' }}">
+            </div>
+
+            <div class="form-field">
+                <label for="valor_total">Valor total</label>
+                <input id="valor_total" name="valor_total" type="text"
+                       value="{% if documento.valor_total is not none %}{{ '%.2f'|format(documento.valor_total) }}{% endif %}"
+                       placeholder="Ex.: 1025,22">
+            </div>
+
+            <div class="form-field full">
+                <label for="observacao_revisao">Observação</label>
+                <textarea id="observacao_revisao" name="observacao_revisao" rows="3">{{ documento.observacao_revisao or '' }}</textarea>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn" type="submit">salvar correções</button>
+        </div>
+    </form>
+</section>
+
 <section class="panel">
     <div class="panel-title">
         <h2>Revisão humana</h2>

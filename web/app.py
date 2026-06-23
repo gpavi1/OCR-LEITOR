@@ -5,6 +5,7 @@ import hmac
 import csv
 import sys
 from io import StringIO
+from decimal import Decimal, InvalidOperation
 
 from flask import Flask, render_template, abort, redirect, url_for, request, session, Response
 
@@ -26,6 +27,34 @@ def _web_credentials():
         os.getenv("WEB_USERNAME", "admin"),
         os.getenv("WEB_PASSWORD", "admin")
     )
+
+
+
+def _valor_decimal_br(valor):
+    if valor is None:
+        return None
+
+    texto_valor = str(valor).strip()
+    if not texto_valor:
+        return None
+
+    texto_valor = texto_valor.replace("R$", "").replace(" ", "")
+
+    if "," in texto_valor:
+        texto_valor = texto_valor.replace(".", "").replace(",", ".")
+
+    try:
+        return Decimal(texto_valor)
+    except InvalidOperation:
+        return None
+
+
+def _texto_ou_none(valor):
+    if valor is None:
+        return None
+
+    valor = str(valor).strip()
+    return valor or None
 
 
 @app.before_request
@@ -233,6 +262,52 @@ def documento_detalhe(documento_id):
         texto_ocr=texto_ocr
     )
 
+
+
+
+@app.route("/documentos/<int:documento_id>/editar", methods=["POST"])
+def editar_documento(documento_id):
+    documento = fetch_one("""
+        SELECT id
+        FROM documentos
+        WHERE id = %s
+    """, (documento_id,))
+
+    if not documento:
+        abort(404)
+
+    empresa = _texto_ou_none(request.form.get("empresa"))
+    numero_nf = _texto_ou_none(request.form.get("numero_nf"))
+    chave_acesso = _texto_ou_none(request.form.get("chave_acesso"))
+    vencimento = _texto_ou_none(request.form.get("vencimento"))
+    valor_total = _valor_decimal_br(request.form.get("valor_total"))
+    observacao_revisao = _texto_ou_none(request.form.get("observacao_revisao"))
+
+    execute("""
+        UPDATE documentos
+        SET
+            empresa = %s,
+            numero_nf = %s,
+            chave_acesso = %s,
+            vencimento = %s,
+            valor_total = %s,
+            observacao_revisao = %s,
+            status = CASE
+                WHEN revisado = TRUE THEN status
+                ELSE 'pendente_revisao'
+            END
+        WHERE id = %s
+    """, (
+        empresa,
+        numero_nf,
+        chave_acesso,
+        vencimento,
+        valor_total,
+        observacao_revisao,
+        documento_id
+    ))
+
+    return redirect(url_for("documento_detalhe", documento_id=documento_id))
 
 
 @app.route("/documentos/<int:documento_id>/revisar", methods=["POST"])

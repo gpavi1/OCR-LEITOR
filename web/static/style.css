@@ -431,3 +431,58 @@ pre {
     color: #fca5a5;
     background: rgba(239, 68, 68, 0.08);
 }
+
+
+.edit-form {
+    display: grid;
+    gap: 16px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+    gap: 14px;
+}
+
+.form-field {
+    display: grid;
+    gap: 7px;
+}
+
+.form-field.full {
+    grid-column: 1 / -1;
+}
+
+.form-field label {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.form-field input,
+.form-field textarea {
+    width: 100%;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: #070b11;
+    color: var(--text);
+    padding: 12px;
+    font-family: Segoe UI, Arial, sans-serif;
+    font-size: 14px;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+@media (max-width: 760px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
