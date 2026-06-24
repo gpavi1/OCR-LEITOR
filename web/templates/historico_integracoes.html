@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<header class="page-header">
+    <div>
+        <p class="eyebrow">OCR-S2B-A</p>
+        <h1>Hist&oacute;rico de integra&ccedil;&otilde;es</h1>
+        <p class="subtitle">Consulta somente leitura das tentativas de integra&ccedil;&atilde;o registradas.</p>
+    </div>
+
+    <a class="btn secondary" href="/integracoes">voltar para fila</a>
+</header>
+
+<section class="panel">
+    <div class="panel-title">
+        <h2>&Uacute;ltimas tentativas</h2>
+        <span>limite: 100</span>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Documento</th>
+                    <th>Empresa</th>
+                    <th>NF</th>
+                    <th>Integra&ccedil;&atilde;o</th>
+                    <th>Tipo</th>
+                    <th>Status</th>
+                    <th>ID externo</th>
+                    <th>Erro</th>
+                    <th>Resposta</th>
+                    <th>Criado em</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tentativa in tentativas %}
+                <tr>
+                    <td>{{ tentativa.id }}</td>
+                    <td class="file-cell">{{ tentativa.arquivo_nome or ("Documento " ~ tentativa.documento_id) }}</td>
+                    <td>{{ tentativa.empresa or "-" }}</td>
+                    <td>{{ tentativa.numero_nf or "-" }}</td>
+                    <td>{{ tentativa.integracao_nome or ("Integracao " ~ tentativa.integracao_id) }}</td>
+                    <td>{{ tentativa.integracao_tipo or "-" }}</td>
+                    <td><span class="badge status-{{ tentativa.status }}">{{ tentativa.status }}</span></td>
+                    <td>{{ tentativa.destino_externo_id or "-" }}</td>
+                    <td class="file-cell">{{ tentativa.erro or "-" }}</td>
+                    <td class="file-cell">{{ tentativa.resposta_resumida or "-" }}</td>
+                    <td>{{ tentativa.criado_em or "-" }}</td>
+                    <td>
+                        {% if tentativa.documento_id %}
+                            <a class="btn" href="/documentos/{{ tentativa.documento_id }}">ver documento</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="12" class="empty">Nenhuma tentativa de integra&ccedil;&atilde;o registrada ainda.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

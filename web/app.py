@@ -171,6 +171,37 @@ def integracoes():
     )
 
 
+
+@app.route("/integracoes/historico")
+def historico_integracoes():
+    tentativas = fetch_all("""
+        SELECT
+            t.id,
+            t.documento_id,
+            d.arquivo_nome,
+            d.empresa,
+            d.numero_nf,
+            t.integracao_id,
+            i.nome AS integracao_nome,
+            i.tipo AS integracao_tipo,
+            t.status,
+            t.destino_externo_id,
+            t.erro,
+            t.resposta_resumida,
+            t.criado_em
+        FROM integracao_tentativas t
+        LEFT JOIN documentos d ON d.id = t.documento_id
+        LEFT JOIN integracoes i ON i.id = t.integracao_id
+        ORDER BY t.criado_em DESC, t.id DESC
+        LIMIT 100
+    """)
+
+    return render_template(
+        "historico_integracoes.html",
+        tentativas=tentativas
+    )
+
+
 @app.route("/exportar/documentos.csv")
 def exportar_documentos_csv():
     documentos = fetch_all("""
