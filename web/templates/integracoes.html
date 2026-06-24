@@ -1,85 +1,100 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
 {% block content %}
-<header class="page-header">
+<section class="page-head integration-page-head">
     <div>
-        <p class="eyebrow">OCR-S2A</p>
+        <div class="eyebrow">OCR-S2E-A2</div>
         <h1>Fila de integra&ccedil;&atilde;o</h1>
-        <p class="subtitle">Documentos revisados e prontos para exporta&ccedil;&atilde;o ou integra&ccedil;&atilde;o futura.</p>
+        <p>Documentos revisados e prontos para exporta&ccedil;&atilde;o ou integra&ccedil;&atilde;o futura.</p>
     </div>
 
-    <div>
+    <div class="actions integration-head-actions">
         <a class="btn secondary" href="/integracoes/historico">ver hist&oacute;rico</a>
         <a class="btn secondary" href="/">voltar aos documentos</a>
     </div>
-</header>
+</section>
 
 <section class="panel">
-    <div class="panel-title">
-        <h2>Documentos pendentes de integra&ccedil;&atilde;o</h2>
-        <span>status: pendente_integracao</span>
+    <div class="integration-header">
+        <div>
+            <h2>Documentos pendentes de integra&ccedil;&atilde;o</h2>
+            <p class="muted">Status: <strong>pendente_integracao</strong></p>
+        </div>
+        <span class="integration-count">{{ documentos|length }} pendente(s)</span>
     </div>
 
-    <div class="table-wrap">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Empresa</th>
-                    <th>NF</th>
-                    <th>Chave de acesso</th>
-                    <th>Vencimento</th>
-                    <th>Valor</th>
-                    <th>Revisado por</th>
-                    <th>Revisado em</th>
-                    <th>Status</th>
-                    <th>Exportar</th>
-                    <th>Integrar</th>
-                    <th>Falha</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for doc in documentos %}
-                <tr>
-                    <td>{{ doc.id }}</td>
-                    <td>{{ doc.empresa or "-" }}</td>
-                    <td>{{ doc.numero_nf or "-" }}</td>
-                    <td class="file-cell">{{ doc.chave_acesso or "-" }}</td>
-                    <td>{{ doc.vencimento or "-" }}</td>
-                    <td>
-                        {% if doc.valor_total is not none %}
-                            R$ {{ "%.2f"|format(doc.valor_total) }}
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                    <td>{{ doc.revisado_por or "-" }}</td>
-                    <td>{{ doc.revisado_em or "-" }}</td>
-                    <td><span class="badge status-{{ doc.status }}">{{ doc.status }}</span></td>
-                    <td>
-                        <a class="btn secondary" href="/exportar/documentos/{{ doc.id }}.csv">CSV</a>
-                    </td>
-                    <td>
+    {% if documentos %}
+        <div class="integration-list">
+            {% for doc in documentos %}
+                <article class="integration-item">
+                    <div class="integration-id">
+                        <span>ID</span>
+                        <strong>{{ doc.id }}</strong>
+                    </div>
+
+                    <div class="integration-body">
+                        <div class="integration-topline">
+                            <div>
+                                <div class="integration-label">Empresa</div>
+                                <div class="integration-company">{{ doc.empresa or "-" }}</div>
+                            </div>
+
+                            <div class="integration-status">
+                                <span class="badge">{{ doc.status }}</span>
+                            </div>
+                        </div>
+
+                        <div class="integration-fields">
+                            <div>
+                                <span>NF</span>
+                                <strong>{{ doc.numero_nf or "-" }}</strong>
+                            </div>
+                            <div>
+                                <span>Vencimento</span>
+                                <strong>{{ doc.vencimento or "-" }}</strong>
+                            </div>
+                            <div>
+                                <span>Valor</span>
+                                <strong>R$ {{ doc.valor_total or "-" }}</strong>
+                            </div>
+                            <div>
+                                <span>Revisado por</span>
+                                <strong>{{ doc.revisado_por or "-" }}</strong>
+                            </div>
+                            <div>
+                                <span>Revisado em</span>
+                                <strong>{{ doc.revisado_em or "-" }}</strong>
+                            </div>
+                        </div>
+
+                        <div class="integration-key-box">
+                            <span>Chave de acesso</span>
+                            <code title="{{ doc.chave_acesso or '-' }}">{{ doc.chave_acesso or "-" }}</code>
+                        </div>
+                    </div>
+
+                    <div class="integration-actions">
+                        <div class="integration-action-row">
+                            <a class="btn secondary" href="/documentos/{{ doc.id }}">ver documento</a>
+                            <a class="btn secondary" href="/exportar/documentos/{{ doc.id }}.csv">CSV</a>
+                        </div>
+
                         <form method="post" action="/integracoes/documentos/{{ doc.id }}/marcar-integrado">
                             <button class="btn" type="submit">marcar integrado</button>
                         </form>
-                    </td>
-                    <td>
-                        <form method="post" action="/integracoes/documentos/{{ doc.id }}/registrar-falha">
+
+                        <form class="integration-failure" method="post" action="/integracoes/documentos/{{ doc.id }}/registrar-falha">
                             <input type="text" name="erro" placeholder="motivo da falha">
                             <button class="btn secondary" type="submit">registrar falha</button>
                         </form>
-                    </td>
-                    <td><a class="btn" href="/documentos/{{ doc.id }}">ver documento</a></td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="13" class="empty">Nenhum documento pendente de integra&ccedil;&atilde;o.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            Nenhum documento pendente de integra&ccedil;&atilde;o.
+        </div>
+    {% endif %}
 </section>
 {% endblock %}
