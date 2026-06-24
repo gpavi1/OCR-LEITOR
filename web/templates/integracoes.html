@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<header class="page-header">
+    <div>
+        <p class="eyebrow">OCR-S2A</p>
+        <h1>Fila de integra&ccedil;&atilde;o</h1>
+        <p class="subtitle">Documentos revisados e prontos para exporta&ccedil;&atilde;o ou integra&ccedil;&atilde;o futura.</p>
+    </div>
+
+    <a class="btn secondary" href="/">voltar aos documentos</a>
+</header>
+
+<section class="panel">
+    <div class="panel-title">
+        <h2>Documentos pendentes de integra&ccedil;&atilde;o</h2>
+        <span>status: pendente_integracao</span>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Empresa</th>
+                    <th>NF</th>
+                    <th>Chave de acesso</th>
+                    <th>Vencimento</th>
+                    <th>Valor</th>
+                    <th>Revisado por</th>
+                    <th>Revisado em</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in documentos %}
+                <tr>
+                    <td>{{ doc.id }}</td>
+                    <td>{{ doc.empresa or "-" }}</td>
+                    <td>{{ doc.numero_nf or "-" }}</td>
+                    <td class="file-cell">{{ doc.chave_acesso or "-" }}</td>
+                    <td>{{ doc.vencimento or "-" }}</td>
+                    <td>
+                        {% if doc.valor_total is not none %}
+                            R$ {{ "%.2f"|format(doc.valor_total) }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>{{ doc.revisado_por or "-" }}</td>
+                    <td>{{ doc.revisado_em or "-" }}</td>
+                    <td><span class="badge status-{{ doc.status }}">{{ doc.status }}</span></td>
+                    <td><a class="btn" href="/documentos/{{ doc.id }}">ver documento</a></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="10" class="empty">Nenhum documento pendente de integra&ccedil;&atilde;o.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

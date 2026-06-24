@@ -145,6 +145,32 @@ def index():
 
 
 
+
+@app.route("/integracoes")
+def integracoes():
+    documentos = fetch_all("""
+        SELECT
+            id,
+            empresa,
+            numero_nf,
+            chave_acesso,
+            vencimento,
+            valor_total,
+            revisado_por,
+            revisado_em,
+            status
+        FROM documentos
+        WHERE status = 'pendente_integracao'
+        ORDER BY revisado_em DESC, id DESC
+        LIMIT 100
+    """)
+
+    return render_template(
+        "integracoes.html",
+        documentos=documentos
+    )
+
+
 @app.route("/exportar/documentos.csv")
 def exportar_documentos_csv():
     documentos = fetch_all("""
