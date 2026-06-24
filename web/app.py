@@ -98,6 +98,66 @@ def logout():
     return redirect(url_for("login"))
 
 
+
+def _obter_integracao_manual(cliente_id):
+    integracao = fetch_one("""
+        SELECT id
+        FROM integracoes
+        WHERE cliente_id = %s
+          AND tipo = 'manual'
+          AND nome = 'Operacao Manual Local'
+        LIMIT 1
+    """, (cliente_id,))
+
+    if integracao:
+        return integracao["id"]
+
+    return execute("""
+        INSERT INTO integracoes (
+            cliente_id,
+            tipo,
+            nome,
+            ativo,
+            config_json
+        )
+        VALUES (
+            %s,
+            'manual',
+            'Operacao Manual Local',
+            TRUE,
+            JSON_OBJECT()
+        )
+    """, (cliente_id,))
+
+
+def _registrar_tentativa_integracao(
+    documento_id,
+    integracao_id,
+    status,
+    destino_externo_id=None,
+    erro=None,
+    resposta_resumida=None
+):
+    return execute("""
+        INSERT INTO integracao_tentativas (
+            documento_id,
+            integracao_id,
+            status,
+            destino_externo_id,
+            erro,
+            resposta_resumida
+        )
+        VALUES (%s, %s, %s, %s, %s, %s)
+    """, (
+        documento_id,
+        integracao_id,
+        status,
+        destino_externo_id,
+        erro,
+        resposta_resumida
+    ))
+
+
 @app.route("/health")
 def health():
     return {
@@ -200,6 +260,159 @@ def historico_integracoes():
         "historico_integracoes.html",
         tentativas=tentativas
     )
+
+
+
+@app.route("/exportar/documentos/<int:documento_id>.csv")
+def exportar_documento_csv(documento_id):
+    documento = fetch_one("""
+        SELECT
+            id,
+            cliente_id,
+            arquivo_nome,
+            empresa,
+            numero_nf,
+            chave_acesso,
+            vencimento,
+            valor_total,
+            status,
+            revisado,
+            revisado_por,
+            revisado_em,
+            observacao_revisao,
+            json_path,
+            criado_em,
+            atualizado_em
+        FROM documentos
+        WHERE id = %s
+    """, (documento_id,))
+
+    if not documento:
+        abort(404)
+
+    output = StringIO()
+    writer = csv.writer(output, delimiter=";", lineterminator="\n")
+
+    writer.writerow([
+        "id",
+        "cliente_id",
+        "arquivo_nome",
+        "empresa",
+        "numero_nf",
+        "chave_acesso",
+        "vencimento",
+        "valor_total",
+        "status",
+        "revisado",
+        "revisado_por",
+        "revisado_em",
+        "observacao_revisao",
+        "json_path",
+        "criado_em",
+        "atualizado_em"
+    ])
+
+    writer.writerow([
+        documento.get("id"),
+        documento.get("cliente_id"),
+        documento.get("arquivo_nome"),
+        documento.get("empresa"),
+        documento.get("numero_nf"),
+        documento.get("chave_acesso"),
+        documento.get("vencimento"),
+        documento.get("valor_total"),
+        documento.get("status"),
+        documento.get("revisado"),
+        documento.get("revisado_por"),
+        documento.get("revisado_em"),
+        documento.get("observacao_revisao"),
+        documento.get("json_path"),
+        documento.get("criado_em"),
+        documento.get("atualizado_em")
+    ])
+
+    integracao_id = _obter_integracao_manual(documento["cliente_id"])
+    _registrar_tentativa_integracao(
+        documento_id=documento["id"],
+        integracao_id=integracao_id,
+        status="sucesso",
+        destino_externo_id=f"csv-documento-{documento['id']}",
+        resposta_resumida="CSV individual gerado manualmente."
+    )
+
+    return Response(
+        output.getvalue(),
+        mimetype="text/csv; charset=utf-8",
+        headers={
+            "Content-Disposition": f"attachment; filename=ocr_documento_{documento_id}.csv"
+        }
+    )
+
+
+@app.route("/integracoes/documentos/<int:documento_id>/marcar-integrado", methods=["POST"])
+def marcar_documento_integrado(documento_id):
+    documento = fetch_one("""
+        SELECT id, cliente_id, status
+        FROM documentos
+        WHERE id = %s
+    """, (documento_id,))
+
+    if not documento:
+        abort(404)
+
+    integracao_id = _obter_integracao_manual(documento["cliente_id"])
+
+    execute("""
+        UPDATE documentos
+        SET
+            status = 'integrado',
+            atualizado_em = NOW()
+        WHERE id = %s
+    """, (documento_id,))
+
+    _registrar_tentativa_integracao(
+        documento_id=documento_id,
+        integracao_id=integracao_id,
+        status="sucesso",
+        destino_externo_id=f"manual-integrado-{documento_id}",
+        resposta_resumida="Documento marcado como integrado manualmente."
+    )
+
+    return redirect(url_for("historico_integracoes"))
+
+
+@app.route("/integracoes/documentos/<int:documento_id>/registrar-falha", methods=["POST"])
+def registrar_falha_integracao(documento_id):
+    documento = fetch_one("""
+        SELECT id, cliente_id, status
+        FROM documentos
+        WHERE id = %s
+    """, (documento_id,))
+
+    if not documento:
+        abort(404)
+
+    erro = _texto_ou_none(request.form.get("erro")) or "Falha de integração registrada manualmente."
+    integracao_id = _obter_integracao_manual(documento["cliente_id"])
+
+    execute("""
+        UPDATE documentos
+        SET
+            status = 'falha_integracao',
+            atualizado_em = NOW()
+        WHERE id = %s
+    """, (documento_id,))
+
+    _registrar_tentativa_integracao(
+        documento_id=documento_id,
+        integracao_id=integracao_id,
+        status="falha",
+        destino_externo_id=f"manual-falha-{documento_id}",
+        erro=erro,
+        resposta_resumida="Falha de integração registrada manualmente."
+    )
+
+    return redirect(url_for("historico_integracoes"))
 
 
 @app.route("/exportar/documentos.csv")

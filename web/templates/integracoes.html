@@ -33,6 +33,9 @@
                     <th>Revisado por</th>
                     <th>Revisado em</th>
                     <th>Status</th>
+                    <th>Exportar</th>
+                    <th>Integrar</th>
+                    <th>Falha</th>
                     <th></th>
                 </tr>
             </thead>
@@ -54,11 +57,25 @@
                     <td>{{ doc.revisado_por or "-" }}</td>
                     <td>{{ doc.revisado_em or "-" }}</td>
                     <td><span class="badge status-{{ doc.status }}">{{ doc.status }}</span></td>
+                    <td>
+                        <a class="btn secondary" href="/exportar/documentos/{{ doc.id }}.csv">CSV</a>
+                    </td>
+                    <td>
+                        <form method="post" action="/integracoes/documentos/{{ doc.id }}/marcar-integrado">
+                            <button class="btn" type="submit">marcar integrado</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form method="post" action="/integracoes/documentos/{{ doc.id }}/registrar-falha">
+                            <input type="text" name="erro" placeholder="motivo da falha">
+                            <button class="btn secondary" type="submit">registrar falha</button>
+                        </form>
+                    </td>
                     <td><a class="btn" href="/documentos/{{ doc.id }}">ver documento</a></td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="10" class="empty">Nenhum documento pendente de integra&ccedil;&atilde;o.</td>
+                    <td colspan="13" class="empty">Nenhum documento pendente de integra&ccedil;&atilde;o.</td>
                 </tr>
                 {% endfor %}
             </tbody>

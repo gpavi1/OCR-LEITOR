@@ -21,7 +21,8 @@
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>Tentativa</th>
+                    <th>Doc ID</th>
                     <th>Documento</th>
                     <th>Empresa</th>
                     <th>NF</th>
@@ -39,6 +40,7 @@
                 {% for tentativa in tentativas %}
                 <tr>
                     <td>{{ tentativa.id }}</td>
+                    <td>{{ tentativa.documento_id or "-" }}</td>
                     <td class="file-cell">{{ tentativa.arquivo_nome or ("Documento " ~ tentativa.documento_id) }}</td>
                     <td>{{ tentativa.empresa or "-" }}</td>
                     <td>{{ tentativa.numero_nf or "-" }}</td>
@@ -59,7 +61,7 @@
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="12" class="empty">Nenhuma tentativa de integra&ccedil;&atilde;o registrada ainda.</td>
+                    <td colspan="13" class="empty">Nenhuma tentativa de integra&ccedil;&atilde;o registrada ainda.</td>
                 </tr>
                 {% endfor %}
             </tbody>
