@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-head integration-page-head">
+    <div>
+        <div class="eyebrow">OCR-S2H-A</div>
+        <h1>Dashboard de integra&ccedil;&atilde;o</h1>
+        <p>Vis&atilde;o operacional dos documentos, fila e tentativas de integra&ccedil;&atilde;o.</p>
+    </div>
+
+    <div class="actions integration-head-actions">
+        <a class="btn secondary" href="/integracoes">fila</a>
+        <a class="btn secondary" href="/integracoes/historico">hist&oacute;rico</a>
+        <a class="btn secondary" href="/">documentos</a>
+    </div>
+</section>
+
+<section class="dashboard-grid">
+    <article class="metric-card">
+        <span>Total de documentos</span>
+        <strong>{{ resumo_documentos.total_documentos or 0 }}</strong>
+        <small>Documentos cadastrados no banco.</small>
+    </article>
+
+    <article class="metric-card">
+        <span>Pendentes</span>
+        <strong>{{ resumo_documentos.pendentes or 0 }}</strong>
+        <small>Aguardando integra&ccedil;&atilde;o.</small>
+    </article>
+
+    <article class="metric-card">
+        <span>Integrados</span>
+        <strong>{{ resumo_documentos.integrados or 0 }}</strong>
+        <small>Marcados como integrados.</small>
+    </article>
+
+    <article class="metric-card">
+        <span>Falhas</span>
+        <strong>{{ resumo_documentos.falhas or 0 }}</strong>
+        <small>Documentos com falha de integra&ccedil;&atilde;o.</small>
+    </article>
+</section>
+
+<section class="dashboard-grid secondary-grid">
+    <article class="metric-card">
+        <span>Tentativas</span>
+        <strong>{{ resumo_tentativas.total_tentativas or 0 }}</strong>
+        <small>Total de registros no hist&oacute;rico.</small>
+    </article>
+
+    <article class="metric-card">
+        <span>Sucessos</span>
+        <strong>{{ resumo_tentativas.sucessos or 0 }}</strong>
+        <small>CSV ou integra&ccedil;&atilde;o manual.</small>
+    </article>
+
+    <article class="metric-card">
+        <span>Falhas registradas</span>
+        <strong>{{ resumo_tentativas.tentativas_falha or 0 }}</strong>
+        <small>Tentativas com erro operacional.</small>
+    </article>
+
+    <article class="metric-card">
+        <span>Reenfileirados</span>
+        <strong>{{ resumo_tentativas.reenfileirados or 0 }}</strong>
+        <small>Documentos devolvidos para fila.</small>
+    </article>
+</section>
+
+<section class="panel">
+    <div class="dashboard-section-head">
+        <div>
+            <h2>&Uacute;ltimas tentativas</h2>
+            <p class="muted">Acompanhamento r&aacute;pido das a&ccedil;&otilde;es recentes.</p>
+        </div>
+        <a class="btn secondary" href="/integracoes/historico">ver hist&oacute;rico completo</a>
+    </div>
+
+    {% if ultimas_tentativas %}
+        <div class="dashboard-events">
+            {% for tentativa in ultimas_tentativas %}
+                <article class="dashboard-event">
+                    <div>
+                        <span class="badge badge-{{ tentativa.status }}">{{ tentativa.status }}</span>
+                    </div>
+
+                    <div>
+                        <strong>{{ tentativa.empresa or "-" }}</strong>
+                        <p>
+                            Doc {{ tentativa.documento_id or "-" }}
+                            {% if tentativa.numero_nf %} &bull; NF {{ tentativa.numero_nf }}{% endif %}
+                            {% if tentativa.destino_externo_id %} &bull; {{ tentativa.destino_externo_id }}{% endif %}
+                        </p>
+                    </div>
+
+                    <div class="dashboard-event-time">
+                        {{ tentativa.criado_em }}
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">Nenhuma tentativa registrada ainda.</div>
+    {% endif %}
+</section>
+
+<section class="panel">
+    <div class="dashboard-section-head">
+        <div>
+            <h2>&Uacute;ltimas falhas</h2>
+            <p class="muted">Pontos que precisam de aten&ccedil;&atilde;o operacional.</p>
+        </div>
+    </div>
+
+    {% if ultimas_falhas %}
+        <div class="failure-list">
+            {% for falha in ultimas_falhas %}
+                <article class="failure-item">
+                    <div>
+                        <strong>{{ falha.empresa or "-" }}</strong>
+                        <p>Doc {{ falha.documento_id }}{% if falha.numero_nf %} &bull; NF {{ falha.numero_nf }}{% endif %}</p>
+                    </div>
+
+                    <div>
+                        <span>Erro</span>
+                        <p>{{ falha.erro or "-" }}</p>
+                    </div>
+
+                    <div>
+                        <span>Criado em</span>
+                        <p>{{ falha.criado_em }}</p>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">Nenhuma falha registrada.</div>
+    {% endif %}
+</section>
+{% endblock %}

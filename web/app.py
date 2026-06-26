@@ -244,6 +244,69 @@ def index():
 
 
 
+
+@app.route("/integracoes/dashboard")
+def dashboard_integracoes():
+    resumo_documentos = fetch_one("""
+        SELECT
+            COUNT(*) AS total_documentos,
+            SUM(CASE WHEN status = 'pendente_integracao' THEN 1 ELSE 0 END) AS pendentes,
+            SUM(CASE WHEN status = 'integrado' THEN 1 ELSE 0 END) AS integrados,
+            SUM(CASE WHEN status = 'falha_integracao' THEN 1 ELSE 0 END) AS falhas
+        FROM documentos
+    """)
+
+    resumo_tentativas = fetch_one("""
+        SELECT
+            COUNT(*) AS total_tentativas,
+            SUM(CASE WHEN status = 'sucesso' THEN 1 ELSE 0 END) AS sucessos,
+            SUM(CASE WHEN status = 'falha' THEN 1 ELSE 0 END) AS tentativas_falha,
+            SUM(CASE WHEN status = 'reenfileirado' THEN 1 ELSE 0 END) AS reenfileirados
+        FROM integracao_tentativas
+    """)
+
+    ultimas_tentativas = fetch_all("""
+        SELECT
+            t.id,
+            t.documento_id,
+            d.arquivo_nome,
+            d.empresa,
+            d.numero_nf,
+            t.status,
+            t.destino_externo_id,
+            t.erro,
+            t.resposta_resumida,
+            t.criado_em
+        FROM integracao_tentativas t
+        LEFT JOIN documentos d ON d.id = t.documento_id
+        ORDER BY t.criado_em DESC, t.id DESC
+        LIMIT 8
+    """)
+
+    ultimas_falhas = fetch_all("""
+        SELECT
+            t.id,
+            t.documento_id,
+            d.empresa,
+            d.numero_nf,
+            t.erro,
+            t.criado_em
+        FROM integracao_tentativas t
+        LEFT JOIN documentos d ON d.id = t.documento_id
+        WHERE t.status = 'falha'
+        ORDER BY t.criado_em DESC, t.id DESC
+        LIMIT 5
+    """)
+
+    return render_template(
+        "dashboard_integracoes.html",
+        resumo_documentos=resumo_documentos or {},
+        resumo_tentativas=resumo_tentativas or {},
+        ultimas_tentativas=ultimas_tentativas,
+        ultimas_falhas=ultimas_falhas
+    )
+
+
 @app.route("/integracoes")
 def integracoes():
     documentos = fetch_all("""
