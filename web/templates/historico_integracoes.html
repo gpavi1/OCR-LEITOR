@@ -1,71 +1,102 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
 {% block content %}
-<header class="page-header">
+<section class="page-head">
     <div>
-        <p class="eyebrow">OCR-S2B-A</p>
+        <div class="eyebrow">OCR-S2G-A2</div>
         <h1>Hist&oacute;rico de integra&ccedil;&otilde;es</h1>
-        <p class="subtitle">Consulta somente leitura das tentativas de integra&ccedil;&atilde;o registradas.</p>
+        <p>Consulta das tentativas registradas e reenfileiramento manual para nova integra&ccedil;&atilde;o.</p>
     </div>
 
-    <a class="btn secondary" href="/integracoes">voltar para fila</a>
-</header>
+    <div class="actions">
+        <a class="btn secondary" href="/integracoes">voltar para fila</a>
+    </div>
+</section>
 
 <section class="panel">
-    <div class="panel-title">
-        <h2>&Uacute;ltimas tentativas</h2>
-        <span>limite: 100</span>
+    <div class="history-header">
+        <div>
+            <h2>&Uacute;ltimas tentativas</h2>
+            <p class="muted">Hist&oacute;rico operacional das a&ccedil;&otilde;es de integra&ccedil;&atilde;o.</p>
+        </div>
+        <span class="history-count">{{ tentativas|length }} registro(s)</span>
     </div>
 
-    <div class="table-wrap">
-        <table>
-            <thead>
-                <tr>
-                    <th>Tentativa</th>
-                    <th>Doc ID</th>
-                    <th>Documento</th>
-                    <th>Empresa</th>
-                    <th>NF</th>
-                    <th>Integra&ccedil;&atilde;o</th>
-                    <th>Tipo</th>
-                    <th>Status</th>
-                    <th>ID externo</th>
-                    <th>Erro</th>
-                    <th>Resposta</th>
-                    <th>Criado em</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for tentativa in tentativas %}
-                <tr>
-                    <td>{{ tentativa.id }}</td>
-                    <td>{{ tentativa.documento_id or "-" }}</td>
-                    <td class="file-cell">{{ tentativa.arquivo_nome or ("Documento " ~ tentativa.documento_id) }}</td>
-                    <td>{{ tentativa.empresa or "-" }}</td>
-                    <td>{{ tentativa.numero_nf or "-" }}</td>
-                    <td>{{ tentativa.integracao_nome or ("Integracao " ~ tentativa.integracao_id) }}</td>
-                    <td>{{ tentativa.integracao_tipo or "-" }}</td>
-                    <td><span class="badge status-{{ tentativa.status }}">{{ tentativa.status }}</span></td>
-                    <td>{{ tentativa.destino_externo_id or "-" }}</td>
-                    <td class="file-cell">{{ tentativa.erro or "-" }}</td>
-                    <td class="file-cell">{{ tentativa.resposta_resumida or "-" }}</td>
-                    <td>{{ tentativa.criado_em or "-" }}</td>
-                    <td>
+    {% if tentativas %}
+        <div class="history-list">
+            {% for tentativa in tentativas %}
+                <article class="history-card">
+                    <div class="history-id">
+                        <span>Tentativa</span>
+                        <strong>{{ tentativa.id }}</strong>
+                        <small>Doc {{ tentativa.documento_id or "-" }}</small>
+                    </div>
+
+                    <div class="history-body">
+                        <div class="history-topline">
+                            <div>
+                                <div class="history-file">{{ tentativa.arquivo_nome or ("Documento " ~ tentativa.documento_id) }}</div>
+                                <div class="history-company">{{ tentativa.empresa or "-" }}</div>
+                            </div>
+
+                            <span class="badge badge-{{ tentativa.status }}">
+                                {{ tentativa.status }}
+                            </span>
+                        </div>
+
+                        <div class="history-fields">
+                            <div>
+                                <span>NF</span>
+                                <strong>{{ tentativa.numero_nf or "-" }}</strong>
+                            </div>
+                            <div>
+                                <span>Integra&ccedil;&atilde;o</span>
+                                <strong>{{ tentativa.integracao_nome or ("Integracao " ~ tentativa.integracao_id) }}</strong>
+                            </div>
+                            <div>
+                                <span>Tipo</span>
+                                <strong>{{ tentativa.integracao_tipo or "-" }}</strong>
+                            </div>
+                            <div>
+                                <span>Criado em</span>
+                                <strong>{{ tentativa.criado_em }}</strong>
+                            </div>
+                        </div>
+
+                        <div class="history-detail-grid">
+                            <div>
+                                <span>ID externo</span>
+                                <code>{{ tentativa.destino_externo_id or "-" }}</code>
+                            </div>
+                            <div>
+                                <span>Erro</span>
+                                <p>{{ tentativa.erro or "-" }}</p>
+                            </div>
+                            <div>
+                                <span>Resposta</span>
+                                <p>{{ tentativa.resposta_resumida or "-" }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="history-actions">
                         {% if tentativa.documento_id %}
+                            <form class="inline-form" method="post" action="/integracoes/documentos/{{ tentativa.documento_id }}/reenfileirar" onsubmit="return confirm('Reenfileirar este documento para integração?');">
+                                <button class="btn secondary compact-btn" type="submit">reenfileirar</button>
+                            </form>
+
                             <a class="btn" href="/documentos/{{ tentativa.documento_id }}">ver documento</a>
                         {% else %}
-                            -
+                            <span class="muted">Sem documento</span>
                         {% endif %}
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="13" class="empty">Nenhuma tentativa de integra&ccedil;&atilde;o registrada ainda.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            Nenhuma tentativa de integra&ccedil;&atilde;o registrada ainda.
+        </div>
+    {% endif %}
 </section>
 {% endblock %}

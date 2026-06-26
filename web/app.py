@@ -158,6 +158,44 @@ def _registrar_tentativa_integracao(
     ))
 
 
+
+@app.route("/integracoes/documentos/<int:documento_id>/reenfileirar", methods=["POST"])
+def reenfileirar_documento_integracao(documento_id):
+    documento = fetch_one("""
+        SELECT id, cliente_id, status
+        FROM documentos
+        WHERE id = %s
+    """, (documento_id,))
+
+    if not documento:
+        flash("Documento não encontrado.", "error")
+        return redirect(url_for("historico_integracoes"))
+
+    if documento["status"] == "pendente_integracao":
+        flash("Documento já está na fila de integração.", "warning")
+        return redirect(url_for("integracoes"))
+
+    integracao_id = _obter_integracao_manual(documento["cliente_id"])
+
+    execute("""
+        UPDATE documentos
+        SET status = 'pendente_integracao',
+            atualizado_em = NOW()
+        WHERE id = %s
+    """, (documento_id,))
+
+    _registrar_tentativa_integracao(
+        documento["id"],
+        integracao_id,
+        "reenfileirado",
+        destino_externo_id=f"manual-reenfileirado-{documento_id}",
+        resposta_resumida="Documento reenfileirado manualmente."
+    )
+
+    flash("Documento reenfileirado para integração.", "success")
+    return redirect(url_for("integracoes"))
+
+
 @app.route("/health")
 def health():
     return {
