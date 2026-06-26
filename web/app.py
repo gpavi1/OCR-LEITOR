@@ -7,7 +7,7 @@ import sys
 from io import StringIO
 from decimal import Decimal, InvalidOperation
 
-from flask import Flask, render_template, abort, redirect, url_for, request, session, Response
+from flask import Flask, Response, abort, flash, redirect, render_template, request, session, url_for
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
