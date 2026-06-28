@@ -1337,3 +1337,295 @@ pre {
     background: rgba(34, 197, 94, 0.25);
     color: #e2e8f0;
 }
+
+/* UI-OCR-03B — Reforço visual perceptível */
+/* Sidebar com destaque lateral */
+.sidebar {
+    position: relative;
+}
+
+.sidebar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(180deg, transparent, rgba(34, 197, 94, 0.15), transparent);
+}
+
+nav a {
+    border-left: 3px solid transparent;
+    padding-left: 11px;
+    transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+}
+
+nav a:hover {
+    border-left-color: #22c55e;
+    background: rgba(34, 197, 94, 0.07);
+    box-shadow: inset 0 0 24px rgba(34, 197, 94, 0.03);
+}
+
+.brand-mark {
+    box-shadow: 0 0 28px rgba(34, 197, 94, 0.18);
+    transition: box-shadow 0.3s;
+}
+
+.brand-mark:hover {
+    box-shadow: 0 0 36px rgba(34, 197, 94, 0.3);
+}
+
+/* Cards com acento superior */
+.card, .panel {
+    position: relative;
+    overflow: visible;
+}
+
+.card::before, .panel::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 18px;
+    width: 44px;
+    height: 3px;
+    background: linear-gradient(90deg, #22c55e, #38bdf8);
+    border-radius: 0 0 4px 4px;
+    opacity: 0.7;
+}
+
+.card {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    transition: box-shadow 0.2s;
+}
+
+.card:hover {
+    box-shadow: 0 6px 28px rgba(0, 0, 0, 0.45);
+}
+
+.card strong {
+    color: #f0f9ff;
+    font-weight: 700;
+}
+
+/* Tabela com linhas alternadas e hover */
+th {
+    background: rgba(7, 11, 20, 0.4);
+    color: #94a3b8;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    border-bottom: 2px solid rgba(34, 197, 94, 0.15);
+}
+
+td {
+    color: #cbd5e1;
+    border-bottom: 1px solid rgba(30, 42, 61, 0.25);
+}
+
+tr:hover td {
+    background: rgba(34, 197, 94, 0.04);
+}
+
+tr:nth-child(even) td {
+    background: rgba(7, 11, 20, 0.15);
+}
+
+tr:nth-child(even):hover td {
+    background: rgba(34, 197, 94, 0.06);
+}
+
+/* Badges com indicador colorido */
+.badge {
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 5px 10px;
+}
+
+.badge::before {
+    content: '';
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+    background: #64748b;
+    flex-shrink: 0;
+}
+
+.status-pendente_integracao::before {
+    background: #38bdf8;
+    box-shadow: 0 0 6px rgba(56, 189, 248, 0.5);
+}
+
+.status-pendente_revisao::before {
+    background: #f59e0b;
+    box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+}
+
+.status-sucesso::before,
+.ok::before {
+    background: #22c55e;
+    box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
+}
+
+.status-erro_ocr::before,
+.status-erro_validacao::before,
+.status-erro_integracao::before {
+    background: #ef4444;
+    box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
+}
+
+/* Botões com sombra e elevação */
+.btn {
+    position: relative;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.15);
+    transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+.btn:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(34, 197, 94, 0.25);
+}
+
+.btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 4px rgba(34, 197, 94, 0.15);
+}
+
+.btn.secondary {
+    box-shadow: none;
+}
+
+.btn.secondary:hover {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Formulários com hover e foco reforçado */
+input, textarea, select {
+    background: #060a12;
+    border: 1px solid rgba(30, 42, 61, 0.7);
+    color: #e2e8f0;
+    transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+}
+
+input:hover, textarea:hover, select:hover {
+    border-color: rgba(56, 189, 248, 0.3);
+}
+
+input:focus, textarea:focus, select:focus {
+    background: #080d18;
+    border-color: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15), 0 0 16px rgba(34, 197, 94, 0.06);
+}
+
+/* Mensagens flash com borda lateral */
+.flash-message {
+    font-weight: 700;
+    border-left: 4px solid;
+    border-radius: 10px;
+}
+
+.flash-success {
+    border-left-color: #22c55e;
+    background: rgba(22, 163, 74, 0.15);
+    color: #bbf7d0;
+}
+
+.flash-error {
+    border-left-color: #ef4444;
+    background: rgba(185, 28, 28, 0.18);
+    color: #fecaca;
+}
+
+.flash-warning {
+    border-left-color: #f59e0b;
+    background: rgba(180, 83, 9, 0.16);
+    color: #fde68a;
+}
+
+/* Cards de métrica com acento */
+.metric-card {
+    position: relative;
+    overflow: visible;
+}
+
+.metric-card::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 16px;
+    width: 36px;
+    height: 3px;
+    background: linear-gradient(90deg, #22c55e, #38bdf8);
+    border-radius: 0 0 4px 4px;
+    opacity: 0.6;
+}
+
+.metric-card strong {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+/* Hierarquia visual de títulos */
+h1 {
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: #f0f9ff;
+}
+
+h2 {
+    font-weight: 700;
+    color: #e2e8f0;
+}
+
+.eyebrow {
+    letter-spacing: 0.15em;
+    color: #64748b;
+}
+
+.page-header .subtitle {
+    color: #94a3b8;
+}
+
+/* Cards de integração/histórico com hover */
+.integration-item, .history-card {
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.integration-item:hover, .history-card:hover {
+    border-color: rgba(56, 189, 248, 0.25);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.integration-id strong, .history-id strong {
+    color: #f0f9ff;
+}
+
+/* Eventos do dashboard com hover */
+.dashboard-event {
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.dashboard-event:hover {
+    border-color: rgba(56, 189, 248, 0.2);
+    background: rgba(15, 22, 37, 0.5);
+}
+
+/* Scrollbar refinada */
+::-webkit-scrollbar-thumb {
+    background: rgba(56, 189, 248, 0.15);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(56, 189, 248, 0.3);
+}
+
+/* Seleção refinada */
+::selection {
+    background: rgba(34, 197, 94, 0.3);
+    color: #f0f9ff;
+}
