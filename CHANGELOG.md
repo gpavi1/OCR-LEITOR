@@ -9,6 +9,7 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Documentação
 
+- Implementada a fase `MARKDOWN-OCR-01` com geração local e manual do relatório Markdown humano em `exports/markdown/`.
 - Implementada a fase `EXPORT-OCR-01` com exportação local, segura e validada do JSON revisado em `exports/json/`.
 - Definido o ADR `docs/integracao/ADR-PLAN-INTEGRACAO-01-api-entrada.md` com a arquitetura segura da futura API de entrada.
 - Registrada a ordem obrigatória `PLAN-INTEGRACAO-01 -> EXPORT-OCR-01 -> MARKDOWN-OCR-01 -> API-IN-01`.

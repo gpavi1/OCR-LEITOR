@@ -17,6 +17,7 @@ if str(ROOT_DIR) not in sys.path:
 
 from database.mysql_db import fetch_all, fetch_one, execute
 from exportacao.json_validado import exportar_documento_revisado
+from exportacao.markdown_relatorio import gerar_markdown_documento_revisado
 
 
 app = Flask(__name__)
@@ -907,6 +908,63 @@ def exportar_documento_json_validado(documento_id):
             destino_externo_id=f"json-validado-documento-{documento_id}",
             erro=resultado["erro"],
             resposta_resumida="Exportação local do JSON validado recusada ou falhou.",
+        )
+        flash(resultado["erro"], "error")
+
+    return redirect(url_for("documento_detalhe", documento_id=documento_id))
+
+
+@app.route("/documentos/<int:documento_id>/gerar-markdown", methods=["POST"])
+def gerar_markdown_documento(documento_id):
+    documento = fetch_one("""
+        SELECT
+            id,
+            cliente_id,
+            arquivo_nome,
+            empresa,
+            numero_nf,
+            chave_acesso,
+            vencimento,
+            valor_total,
+            status,
+            revisado,
+            revisado_por,
+            revisado_em,
+            json_path,
+            criado_em,
+            atualizado_em
+        FROM documentos
+        WHERE id = %s
+    """, (documento_id,))
+
+    if not documento:
+        abort(404)
+
+    resultado = gerar_markdown_documento_revisado(
+        documento_id,
+        obter_documento=lambda _documento_id: documento,
+        root_dir=ROOT_DIR,
+    )
+
+    integracao_id = _obter_integracao_manual(documento["cliente_id"])
+
+    if resultado["ok"]:
+        _registrar_tentativa_integracao(
+            documento_id=documento_id,
+            integracao_id=integracao_id,
+            status="sucesso",
+            destino_externo_id=resultado["caminho_relativo"],
+            resposta_resumida="Relatório Markdown gerado localmente.",
+        )
+        flash(f"Relatório Markdown gerado em {resultado['caminho_relativo']}.", "success")
+    else:
+        _registrar_tentativa_integracao(
+            documento_id=documento_id,
+            integracao_id=integracao_id,
+            status="falha",
+            destino_externo_id=f"markdown-documento-{documento_id}",
+            erro=resultado["erro"],
+            resposta_resumida="Geração local do relatório Markdown recusada ou falhou.",
         )
         flash(resultado["erro"], "error")
 

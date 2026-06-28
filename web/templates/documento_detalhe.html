@@ -201,6 +201,12 @@
                 <form method="post" action="/documentos/{{ documento.id }}/exportar-json" class="review-actions">
                     <button class="btn" type="submit">Exportar JSON validado</button>
                 </form>
+
+                <p class="review-status-note">O relatório Markdown é apenas leitura humana e fica salvo em <code>exports/markdown/</code>.</p>
+
+                <form method="post" action="/documentos/{{ documento.id }}/gerar-markdown" class="review-actions">
+                    <button class="btn secondary" type="submit">Gerar relatório Markdown</button>
+                </form>
             {% else %}
                 <p class="review-status-note">A exportação JSON validada só fica disponível para documentos revisados em status seguro.</p>
             {% endif %}

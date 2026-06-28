@@ -82,6 +82,7 @@
 - **[INDEX.md](INDEX.md)** - Este arquivo (navegação)
 - **[docs/integracao/ADR-PLAN-INTEGRACAO-01-api-entrada.md](docs/integracao/ADR-PLAN-INTEGRACAO-01-api-entrada.md)** - ADR da arquitetura segura da futura API de entrada
 - **[docs/exportacao/EXPORT-OCR-01_JSON_VALIDADO.md](docs/exportacao/EXPORT-OCR-01_JSON_VALIDADO.md)** - Exportação local do JSON validado revisado
+- **[docs/exportacao/MARKDOWN-OCR-01_RELATORIO_HUMANO.md](docs/exportacao/MARKDOWN-OCR-01_RELATORIO_HUMANO.md)** - Relatório Markdown humano derivado do JSON validado
 
 ### 🛠️ Utilidades
 - **[examples.py](examples.py)** - 12 exemplos práticos
@@ -157,6 +158,9 @@
 
 **Entender a exportação JSON validada local**
 → [docs/exportacao/EXPORT-OCR-01_JSON_VALIDADO.md](docs/exportacao/EXPORT-OCR-01_JSON_VALIDADO.md)
+
+**Entender o relatório Markdown humano local**
+→ [docs/exportacao/MARKDOWN-OCR-01_RELATORIO_HUMANO.md](docs/exportacao/MARKDOWN-OCR-01_RELATORIO_HUMANO.md)
 
 **Desenvolver o projeto**
 → [copilot-instructions.md](copilot-instructions.md)
