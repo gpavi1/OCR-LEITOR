@@ -1,0 +1,33 @@
+{
+  "origem": "OCR-LEITOR",
+  "versao_contrato": "ocr_leitor.documento_fiscal.v1",
+  "documento": {
+    "empresa": "EMPRESA SANDBOX EXEMPLO LTDA",
+    "numero_nf": "987654",
+    "chave_acesso": "00000000000000000000000000000000000000000000",
+    "vencimento": "30/08/2026",
+    "valor_total": "250.75"
+  },
+  "revisao": {
+    "revisado": true,
+    "revisado_por": "operador_sandbox",
+    "revisado_em": "2026-06-28T00:00:00"
+  },
+  "confianca": {
+    "empresa": null,
+    "numero_nf": null,
+    "chave_acesso": null,
+    "vencimento": null,
+    "valor_total": null
+  },
+  "integracao": {
+    "status": "pronto_para_destino",
+    "destino": "fechames_fiscal",
+    "modo": "simulado"
+  },
+  "metadados": {
+    "arquivo_nome": "documento_sandbox_exemplo.pdf",
+    "json_path": "docs/sandbox/fechames_documento_fiscal_v1.sandbox.json",
+    "gerado_em": "2026-06-28T00:00:00"
+  }
+}
