@@ -257,6 +257,29 @@ def upload_documento():
     return redirect(url_for("upload_documento"))
 
 
+@app.route("/upload/processar", methods=["POST"])
+def processar_upload():
+    from ocr_pipeline_s1 import INPUT_FOLDER, processar_input
+
+    pasta = Path(INPUT_FOLDER)
+    if not pasta.exists():
+        flash("Pasta input/ não encontrada.", "error")
+        return redirect(url_for("upload_documento"))
+
+    arquivos = [p for p in pasta.iterdir() if p.is_file()]
+    if not arquivos:
+        flash("Nenhum arquivo para processar em input/.", "warning")
+        return redirect(url_for("upload_documento"))
+
+    try:
+        processar_input(cliente_id=1, mover=True)
+        flash(f"Processamento concluído. Verifique a lista de documentos.", "success")
+    except Exception as exc:
+        flash(f"Erro durante o processamento: {exc}", "error")
+
+    return redirect(url_for("upload_documento"))
+
+
 @app.route("/health")
 def health():
     return {

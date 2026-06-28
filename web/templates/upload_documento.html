@@ -22,5 +22,13 @@
     <p class="upload-notice">Nesta fase o arquivo &eacute; salvo com seguran&ccedil;a na entrada do OCR; o processamento continua controlado.</p>
 </section>
 
+<section class="proc-card">
+    <h2 class="proc-title">Processamento controlado</h2>
+    <p class="proc-desc">Upload e processamento s&atilde;o etapas separadas. Envie os arquivos acima e depois clique no bot&atilde;o abaixo para iniciar o OCR nos documentos enviados.</p>
+    <form class="proc-form" method="post" action="/upload/processar">
+        <button class="btn proc-btn" type="submit">Processar arquivos enviados</button>
+    </form>
+</section>
+
 <a class="btn secondary" href="/">&larr; Voltar para documentos</a>
 {% endblock %}

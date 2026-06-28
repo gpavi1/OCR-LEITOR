@@ -2260,6 +2260,44 @@ pre {
     }
 }
 
+/* UPLOAD-OCR-02 — Processamento controlado */
+
+.proc-card {
+    background: rgba(15, 22, 37, 0.5);
+    border: 1px solid rgba(30, 42, 61, 0.3);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+}
+
+.proc-title {
+    font-size: 14px;
+    color: #e2e8f0;
+    margin: 0 0 6px;
+}
+
+.proc-desc {
+    font-size: 12px;
+    color: #64748b;
+    margin: 0 0 12px;
+    line-height: 1.5;
+}
+
+.proc-form {
+    margin: 0;
+}
+
+.proc-btn {
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: #7dd3fc;
+}
+
+.proc-btn:hover {
+    background: rgba(56, 189, 248, 0.2);
+    border-color: rgba(56, 189, 248, 0.5);
+}
+
 /* UPLOAD-OCR-01 — Upload seguro pelo painel */
 
 .upload-card {
