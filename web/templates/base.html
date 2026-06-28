@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <title>OCR-LEITOR</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -18,13 +17,19 @@
                 </div>
             </div>
 
-            <nav>
-                <a href="/">Documentos</a>
-                <a href="/integracoes/dashboard">Dashboard</a>
-                <a href="/integracoes">Integra&ccedil;&otilde;es</a>
-                <a href="/exportar/documentos.csv">Exportar CSV</a>
-                <a href="/health" target="_blank">Health</a>
-                <a href="/logout">Sair</a>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <span class="nav-label">Aplica&ccedil;&atilde;o</span>
+                    <a href="/" class="nav-link{% if request.path == '/' %} nav-link-active{% endif %}">Documentos</a>
+                    <a href="/integracoes/dashboard" class="nav-link{% if request.path == '/integracoes/dashboard' %} nav-link-active{% endif %}">Dashboard</a>
+                    <a href="/integracoes" class="nav-link{% if request.path == '/integracoes' %} nav-link-active{% endif %}">Integra&ccedil;&otilde;es</a>
+                </div>
+                <div class="nav-section">
+                    <span class="nav-label">Sistema</span>
+                    <a href="/exportar/documentos.csv" class="nav-link">Exportar CSV</a>
+                    <a href="/health" class="nav-link" target="_blank">Health</a>
+                    <a href="/logout" class="nav-link">Sair</a>
+                </div>
             </nav>
 
             <div class="sidebar-footer">
@@ -34,19 +39,26 @@
         </aside>
 
         <main class="content">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <div class="flash-messages">
-            {% for category, message in messages %}
-                <div class="flash-message flash-{{ category }}">
-                    {{ message }}
+            <div class="workspace-topbar">
+                <span class="topbar-title">OCR-LEITOR</span>
+                <div class="topbar-status">
+                    <span class="status-badge status-local">Local</span>
+                    <span class="status-badge status-address">127.0.0.1</span>
+                    <span class="status-badge status-ro">Read-only</span>
                 </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-{% endwith %}
+            </div>
 
-{% block content %}{% endblock %}
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
         </main>
     </div>
 </body>
