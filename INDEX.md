@@ -81,6 +81,7 @@
 
 - **[INDEX.md](INDEX.md)** - Este arquivo (navegação)
 - **[docs/integracao/ADR-PLAN-INTEGRACAO-01-api-entrada.md](docs/integracao/ADR-PLAN-INTEGRACAO-01-api-entrada.md)** - ADR da arquitetura segura da futura API de entrada
+- **[docs/integracao/API-IN-01_ENTRADA_DOCUMENTOS.md](docs/integracao/API-IN-01_ENTRADA_DOCUMENTOS.md)** - API local autenticada para entrada controlada de documentos
 - **[docs/exportacao/EXPORT-OCR-01_JSON_VALIDADO.md](docs/exportacao/EXPORT-OCR-01_JSON_VALIDADO.md)** - Exportação local do JSON validado revisado
 - **[docs/exportacao/MARKDOWN-OCR-01_RELATORIO_HUMANO.md](docs/exportacao/MARKDOWN-OCR-01_RELATORIO_HUMANO.md)** - Relatório Markdown humano derivado do JSON validado
 
@@ -155,6 +156,9 @@
 
 **Entender o planejamento da futura API de entrada**
 → [docs/integracao/ADR-PLAN-INTEGRACAO-01-api-entrada.md](docs/integracao/ADR-PLAN-INTEGRACAO-01-api-entrada.md)
+
+**Usar a API local de entrada controlada**
+→ [docs/integracao/API-IN-01_ENTRADA_DOCUMENTOS.md](docs/integracao/API-IN-01_ENTRADA_DOCUMENTOS.md)
 
 **Entender a exportação JSON validada local**
 → [docs/exportacao/EXPORT-OCR-01_JSON_VALIDADO.md](docs/exportacao/EXPORT-OCR-01_JSON_VALIDADO.md)

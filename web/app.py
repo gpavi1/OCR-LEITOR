@@ -2,6 +2,7 @@
 import json
 import os
 import hmac
+import hashlib
 import csv
 import sys
 import uuid
@@ -24,6 +25,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv("WEB_SECRET_KEY", "ocr-leitor-local-dev")
 
 EXTENSOES_PERMITIDAS_UPLOAD = {".jpg", ".jpeg", ".png", ".pdf"}
+EXTENSOES_PERMITIDAS_API_ENTRADA = {".jpg", ".jpeg", ".png"}
 TAMANHO_MAXIMO_UPLOAD = 10 * 1024 * 1024
 
 STATUS_LABEL = {
@@ -65,6 +67,12 @@ def extensao_permitida_upload(nome_arquivo):
     return ext in EXTENSOES_PERMITIDAS_UPLOAD
 
 
+def extensao_permitida_api_entrada(nome_arquivo):
+    nome = Path(nome_arquivo).name
+    ext = Path(nome).suffix.lower()
+    return ext in EXTENSOES_PERMITIDAS_API_ENTRADA
+
+
 def gerar_nome_upload_seguro(nome_original):
     nome = Path(nome_original).name
     ext = Path(nome).suffix.lower()
@@ -81,6 +89,43 @@ def resolver_pasta_input():
     pasta = ROOT_DIR / "input"
     pasta.mkdir(parents=True, exist_ok=True)
     return pasta
+
+
+def _resposta_api_erro(status_http, codigo, mensagem):
+    return {
+        "ok": False,
+        "status": codigo,
+        "erro": mensagem,
+        "processamento_automatico": False,
+    }, status_http
+
+
+def _validar_bearer_api_entrada():
+    token_esperado = os.getenv("OCR_API_TOKEN")
+    if not token_esperado:
+        return False, _resposta_api_erro(
+            401,
+            "token_nao_configurado",
+            "API de entrada não configurada.",
+        )
+
+    authorization = request.headers.get("Authorization", "")
+    if not authorization.startswith("Bearer "):
+        return False, _resposta_api_erro(
+            401,
+            "nao_autorizado",
+            "Authorization Bearer é obrigatório.",
+        )
+
+    token_recebido = authorization[len("Bearer "):]
+    if not hmac.compare_digest(token_recebido, token_esperado):
+        return False, _resposta_api_erro(
+            401,
+            "nao_autorizado",
+            "Token inválido.",
+        )
+
+    return True, None
 
 
 def _web_credentials():
@@ -120,7 +165,10 @@ def _texto_ou_none(valor):
 
 @app.before_request
 def exigir_login():
-    rotas_livres = {"login", "static", "health"}
+    if request.path.startswith("/api/"):
+        return None
+
+    rotas_livres = {"login", "static", "health", "api_entrada_documentos"}
     if request.endpoint in rotas_livres:
         return None
 
@@ -312,6 +360,66 @@ def processar_upload():
         flash(f"Erro durante o processamento: {exc}", "error")
 
     return redirect(url_for("upload_documento"))
+
+
+@app.route("/api/v1/documentos/entrada", methods=["POST"])
+def api_entrada_documentos():
+    autorizado, resposta = _validar_bearer_api_entrada()
+    if not autorizado:
+        return resposta
+
+    content_type = request.content_type or ""
+    if not content_type.lower().startswith("multipart/form-data"):
+        return _resposta_api_erro(
+            400,
+            "payload_invalido",
+            "A requisição deve usar multipart/form-data.",
+        )
+
+    if "documento" not in request.files:
+        return _resposta_api_erro(
+            400,
+            "documento_ausente",
+            "Campo documento é obrigatório.",
+        )
+
+    arquivo = request.files["documento"]
+    if not arquivo.filename or arquivo.filename.strip() == "":
+        return _resposta_api_erro(
+            400,
+            "nome_arquivo_ausente",
+            "Nome do arquivo é obrigatório.",
+        )
+
+    if not extensao_permitida_api_entrada(arquivo.filename):
+        return _resposta_api_erro(
+            415,
+            "extensao_nao_permitida",
+            "Extensão não permitida nesta API. Use .jpg, .jpeg ou .png.",
+        )
+
+    dados = arquivo.read()
+    if len(dados) > TAMANHO_MAXIMO_UPLOAD:
+        return _resposta_api_erro(
+            413,
+            "arquivo_muito_grande",
+            "Arquivo excede o limite de 10 MB.",
+        )
+
+    hash_sha256 = hashlib.sha256(dados).hexdigest()
+    nome_seguro = gerar_nome_upload_seguro(arquivo.filename)
+    caminho = resolver_pasta_input() / nome_seguro
+    caminho.write_bytes(dados)
+
+    return {
+        "ok": True,
+        "status": "recebido",
+        "fluxo": "aguardando_processamento_manual",
+        "processamento_automatico": False,
+        "arquivo_nome": nome_seguro,
+        "hash_sha256": hash_sha256,
+        "proxima_acao": "processar_manual_pelo_painel",
+    }, 202
 
 
 @app.route("/health")
