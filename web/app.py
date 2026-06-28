@@ -4,6 +4,8 @@ import os
 import hmac
 import csv
 import sys
+import uuid
+import datetime
 from io import StringIO
 from decimal import Decimal, InvalidOperation
 
@@ -19,7 +21,32 @@ from database.mysql_db import fetch_all, fetch_one, execute
 app = Flask(__name__)
 app.secret_key = os.getenv("WEB_SECRET_KEY", "ocr-leitor-local-dev")
 
+EXTENSOES_PERMITIDAS_UPLOAD = {".jpg", ".jpeg", ".png", ".pdf"}
+TAMANHO_MAXIMO_UPLOAD = 10 * 1024 * 1024
 
+
+def extensao_permitida_upload(nome_arquivo):
+    nome = Path(nome_arquivo).name
+    ext = Path(nome).suffix.lower()
+    return ext in EXTENSOES_PERMITIDAS_UPLOAD
+
+
+def gerar_nome_upload_seguro(nome_original):
+    nome = Path(nome_original).name
+    ext = Path(nome).suffix.lower()
+    base = Path(nome).stem
+    base = "".join(c for c in base if c.isalnum() or c in ("-", "_")).strip()
+    if not base:
+        base = "documento"
+    timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    uuid_part = str(uuid.uuid4())[:8]
+    return f"{base}_{timestamp}_{uuid_part}{ext}"
+
+
+def resolver_pasta_input():
+    pasta = ROOT_DIR / "input"
+    pasta.mkdir(parents=True, exist_ok=True)
+    return pasta
 
 
 def _web_credentials():
@@ -194,6 +221,40 @@ def reenfileirar_documento_integracao(documento_id):
 
     flash("Documento reenfileirado para integração.", "success")
     return redirect(url_for("integracoes"))
+
+
+@app.route("/upload", methods=["GET", "POST"])
+def upload_documento():
+    if request.method == "GET":
+        return render_template("upload_documento.html")
+
+    if "documento" not in request.files:
+        flash("Nenhum arquivo enviado.", "error")
+        return redirect(url_for("upload_documento"))
+
+    arquivo = request.files["documento"]
+
+    if not arquivo.filename or arquivo.filename.strip() == "":
+        flash("Nome do arquivo vazio.", "error")
+        return redirect(url_for("upload_documento"))
+
+    if not extensao_permitida_upload(arquivo.filename):
+        flash("Extensão não permitida. Use .jpg, .jpeg, .png ou .pdf.", "error")
+        return redirect(url_for("upload_documento"))
+
+    dados = arquivo.read()
+
+    if len(dados) > TAMANHO_MAXIMO_UPLOAD:
+        flash("Arquivo excede o limite de 10 MB.", "error")
+        return redirect(url_for("upload_documento"))
+
+    nome_seguro = gerar_nome_upload_seguro(arquivo.filename)
+    pasta_input = resolver_pasta_input()
+    caminho = pasta_input / nome_seguro
+    caminho.write_bytes(dados)
+
+    flash(f"Documento enviado com sucesso: {nome_seguro}", "success")
+    return redirect(url_for("upload_documento"))
 
 
 @app.route("/health")

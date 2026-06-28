@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<header class="page-header">
+    <div>
+        <p class="eyebrow">Entrada de arquivos</p>
+        <h1>Enviar documento</h1>
+        <p class="subtitle">Envie imagem ou PDF para entrada do OCR.</p>
+    </div>
+</header>
+
+<section class="upload-card">
+    <form class="upload-form" method="post" enctype="multipart/form-data">
+        <div class="upload-dropzone">
+            <label class="upload-label" for="documento">Selecione o arquivo</label>
+            <input type="file" id="documento" name="documento"
+                   accept=".jpg,.jpeg,.png,.pdf" required>
+            <span class="upload-hint">Formatos aceitos: JPG, JPEG, PNG, PDF &mdash; at&eacute; 10 MB</span>
+        </div>
+        <button class="btn" type="submit">Enviar para fila</button>
+    </form>
+    <p class="upload-notice">Nesta fase o arquivo &eacute; salvo com seguran&ccedil;a na entrada do OCR; o processamento continua controlado.</p>
+</section>
+
+<a class="btn secondary" href="/">&larr; Voltar para documentos</a>
+{% endblock %}
