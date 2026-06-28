@@ -24,6 +24,27 @@ app.secret_key = os.getenv("WEB_SECRET_KEY", "ocr-leitor-local-dev")
 EXTENSOES_PERMITIDAS_UPLOAD = {".jpg", ".jpeg", ".png", ".pdf"}
 TAMANHO_MAXIMO_UPLOAD = 10 * 1024 * 1024
 
+STATUS_LABEL = {
+    "recebido": "Recebido",
+    "processando": "Processando",
+    "pendente_revisao": "Precisa revisão",
+    "pendente_integracao": "Aguardando integração",
+    "integrado": "Integrado",
+    "falha_integracao": "Falha na integração",
+    "erro_ocr": "Erro OCR — revisar",
+}
+
+STATUS_PRECISA_REVISAO = {"pendente_revisao", "erro_ocr"}
+
+
+def status_label(status):
+    return STATUS_LABEL.get(status, status.replace("_", " ").title())
+
+
+@app.context_processor
+def inject_globals():
+    return dict(status_label=status_label, precisa_revisao=STATUS_PRECISA_REVISAO)
+
 
 def extensao_permitida_upload(nome_arquivo):
     nome = Path(nome_arquivo).name

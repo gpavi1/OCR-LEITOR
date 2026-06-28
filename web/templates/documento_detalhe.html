@@ -11,6 +11,13 @@
     <a class="btn secondary" href="/">voltar</a>
 </header>
 
+{% if documento.status in precisa_revisao %}
+<section class="review-alert">
+    <span class="review-alert-icon">&#9888;</span>
+    <span>Este documento precisa de revisão humana.</span>
+</section>
+{% endif %}
+
 <section class="detail-grid">
     <div class="panel">
         <div class="panel-title">
@@ -43,7 +50,7 @@
             </dd>
 
             <dt>Status</dt>
-            <dd><span class="badge status-{{ documento.status }}">{{ documento.status }}</span></dd>
+            <dd><span class="badge status-{{ documento.status }}{% if documento.status in precisa_revisao %} needs-review{% endif %}">{{ status_label(documento.status) }}</span></dd>
 
             <dt>Revisado</dt>
             <dd>

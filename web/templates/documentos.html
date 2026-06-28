@@ -92,7 +92,7 @@
                             -
                         {% endif %}
                     </td>
-                    <td><span class="badge status-{{ doc.status }}">{{ doc.status }}</span></td>
+                    <td><span class="badge status-{{ doc.status }}{% if doc.status in precisa_revisao %} needs-review{% endif %}">{{ status_label(doc.status) }}</span></td>
                     <td>
                         {% if doc.revisado %}
                             <span class="badge ok">sim</span>
