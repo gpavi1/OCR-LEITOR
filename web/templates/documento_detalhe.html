@@ -1,14 +1,17 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 
 {% block content %}
-<header class="page-header">
+<header class="page-header review-header">
     <div>
         <p class="eyebrow">Documento #{{ documento.id }}</p>
         <h1>{{ documento.arquivo_nome }}</h1>
-        <p class="subtitle">Detalhe do processamento OCR.</p>
+        <p class="subtitle">Conferir campos, corrigir dados e aprovar manualmente.</p>
     </div>
 
-    <a class="btn secondary" href="/">voltar</a>
+    <div class="review-header-actions">
+        <span class="badge status-{{ documento.status }}{% if documento.status in precisa_revisao %} needs-review{% endif %}">{{ status_label(documento.status) }}</span>
+        <a class="btn secondary" href="/">voltar</a>
+    </div>
 </header>
 
 {% if documento.status in precisa_revisao %}
@@ -18,60 +21,89 @@
 </section>
 {% endif %}
 
-<section class="detail-grid">
-    <div class="panel">
+<section class="review-layout">
+    <article class="review-panel review-panel-summary">
+        <div class="panel-title">
+            <h2>Identificação do documento</h2>
+            <span>status, revisão e rastreio</span>
+        </div>
+
+        <div class="review-summary-grid">
+            <div class="review-summary-item">
+                <span class="review-summary-label">Arquivo</span>
+                <strong class="review-summary-value">{{ documento.arquivo_nome }}</strong>
+            </div>
+
+            <div class="review-summary-item">
+                <span class="review-summary-label">Cliente ID</span>
+                <strong class="review-summary-value">{{ documento.cliente_id }}</strong>
+            </div>
+
+            <div class="review-summary-item">
+                <span class="review-summary-label">Status</span>
+                <strong class="review-summary-value badge status-{{ documento.status }}{% if documento.status in precisa_revisao %} needs-review{% endif %}">{{ status_label(documento.status) }}</strong>
+                <small class="review-summary-hint">Código técnico: {{ documento.status }}</small>
+            </div>
+
+            <div class="review-summary-item">
+                <span class="review-summary-label">Revisão</span>
+                <strong class="review-summary-value">{{ "Concluída" if documento.revisado else "Pendente" }}</strong>
+            </div>
+        </div>
+    </article>
+
+    <article class="review-panel review-panel-fields">
         <div class="panel-title">
             <h2>Campos extraídos</h2>
+            <span>os vazios ficam destacados</span>
         </div>
 
-        <dl class="details">
-            <dt>Cliente ID</dt>
-            <dd>{{ documento.cliente_id }}</dd>
+        <div class="review-field-grid">
+            <div class="review-field {% if campo_pendente(documento.empresa) %}is-empty{% endif %}">
+                <span class="review-field-label">Empresa</span>
+                <strong class="review-field-value">{{ documento.empresa or "Não identificado" }}</strong>
+                <span class="review-field-state">{{ "Pendente" if campo_pendente(documento.empresa) else "Preenchido" }}</span>
+            </div>
 
-            <dt>Empresa</dt>
-            <dd>{{ documento.empresa or "-" }}</dd>
+            <div class="review-field {% if campo_pendente(documento.numero_nf) %}is-empty{% endif %}">
+                <span class="review-field-label">Número NF</span>
+                <strong class="review-field-value">{{ documento.numero_nf or "Não identificado" }}</strong>
+                <span class="review-field-state">{{ "Pendente" if campo_pendente(documento.numero_nf) else "Preenchido" }}</span>
+            </div>
 
-            <dt>Número NF</dt>
-            <dd>{{ documento.numero_nf or "-" }}</dd>
+            <div class="review-field {% if campo_pendente(documento.chave_acesso) %}is-empty{% endif %}">
+                <span class="review-field-label">Chave de acesso</span>
+                <strong class="review-field-value mono">{{ documento.chave_acesso or "Não identificado" }}</strong>
+                <span class="review-field-state">{{ "Pendente" if campo_pendente(documento.chave_acesso) else "Preenchido" }}</span>
+            </div>
 
-            <dt>Chave de acesso</dt>
-            <dd class="mono">{{ documento.chave_acesso or "-" }}</dd>
+            <div class="review-field {% if campo_pendente(documento.vencimento) %}is-empty{% endif %}">
+                <span class="review-field-label">Vencimento</span>
+                <strong class="review-field-value">{{ documento.vencimento or "Não identificado" }}</strong>
+                <span class="review-field-state">{{ "Pendente" if campo_pendente(documento.vencimento) else "Preenchido" }}</span>
+            </div>
 
-            <dt>Vencimento</dt>
-            <dd>{{ documento.vencimento or "-" }}</dd>
+            <div class="review-field {% if campo_pendente(documento.valor_total) %}is-empty{% endif %}">
+                <span class="review-field-label">Valor total</span>
+                <strong class="review-field-value">
+                    {% if documento.valor_total is not none %}
+                        R$ {{ "%.2f"|format(documento.valor_total) }}
+                    {% else %}
+                        Não identificado
+                    {% endif %}
+                </strong>
+                <span class="review-field-state">{{ "Pendente" if campo_pendente(documento.valor_total) else "Preenchido" }}</span>
+            </div>
+        </div>
+    </article>
 
-            <dt>Valor total</dt>
-            <dd>
-                {% if documento.valor_total is not none %}
-                    R$ {{ "%.2f"|format(documento.valor_total) }}
-                {% else %}
-                    -
-                {% endif %}
-            </dd>
-
-            <dt>Status</dt>
-            <dd><span class="badge status-{{ documento.status }}{% if documento.status in precisa_revisao %} needs-review{% endif %}">{{ status_label(documento.status) }}</span></dd>
-
-            <dt>Revisado</dt>
-            <dd>
-                {% if documento.revisado %}
-                    <span class="badge ok">sim</span>
-                {% else %}
-                    <span class="badge muted">não</span>
-                {% endif %}
-            </dd>
-
-            <dt>JSON</dt>
-            <dd class="small-path">{{ documento.json_path or "-" }}</dd>
-        </dl>
-    </div>
-
-    <div class="panel">
+    <article class="review-panel review-panel-file">
         <div class="panel-title">
-            <h2>Arquivo</h2>
+            <h2>Arquivo processado</h2>
+            <span>rastreio técnico</span>
         </div>
 
-        <dl class="details">
+        <dl class="details review-details">
             <dt>Origem</dt>
             <dd class="small-path">{{ documento.arquivo_origem or "-" }}</dd>
 
@@ -84,104 +116,130 @@
             <dt>Erro</dt>
             <dd>{{ documento.ultimo_erro or "-" }}</dd>
         </dl>
-    </div>
-</section>
+    </article>
 
-
-
-<section class="panel">
-    <div class="panel-title">
-        <h2>Correção manual dos campos</h2>
-        <span>salva no MySQL</span>
-    </div>
-
-    <form method="post" action="/documentos/{{ documento.id }}/editar" class="edit-form">
-        <div class="form-grid">
-            <div class="form-field">
-                <label for="empresa">Empresa</label>
-                <input id="empresa" name="empresa" type="text" value="{{ documento.empresa or '' }}">
-            </div>
-
-            <div class="form-field">
-                <label for="numero_nf">Número NF</label>
-                <input id="numero_nf" name="numero_nf" type="text" value="{{ documento.numero_nf or '' }}">
-            </div>
-
-            <div class="form-field full">
-                <label for="chave_acesso">Chave de acesso</label>
-                <input id="chave_acesso" name="chave_acesso" type="text" value="{{ documento.chave_acesso or '' }}">
-            </div>
-
-            <div class="form-field">
-                <label for="vencimento">Vencimento</label>
-                <input id="vencimento" name="vencimento" type="date" value="{{ documento.vencimento or '' }}">
-            </div>
-
-            <div class="form-field">
-                <label for="valor_total">Valor total</label>
-                <input id="valor_total" name="valor_total" type="text"
-                       value="{% if documento.valor_total is not none %}{{ '%.2f'|format(documento.valor_total) }}{% endif %}"
-                       placeholder="Ex.: 1025,22">
-            </div>
-
-            <div class="form-field full">
-                <label for="observacao_revisao">Observação</label>
-                <textarea id="observacao_revisao" name="observacao_revisao" rows="3">{{ documento.observacao_revisao or '' }}</textarea>
-            </div>
+    <article class="review-panel review-panel-observation">
+        <div class="panel-title">
+            <h2>Observações</h2>
+            <span>registro atual</span>
         </div>
-
-        <div class="form-actions">
-            <button class="btn" type="submit">salvar correções</button>
-        </div>
-    </form>
-</section>
-
-<section class="panel">
-    <div class="panel-title">
-        <h2>Revisão humana</h2>
-    </div>
-
-    {% if documento.revisado %}
-        <p class="review-ok">Documento revisado por {{ documento.revisado_por or "operador" }} em {{ documento.revisado_em }}.</p>
 
         {% if documento.observacao_revisao %}
-            <p class="review-note">{{ documento.observacao_revisao }}</p>
+            <p class="review-observation">{{ documento.observacao_revisao }}</p>
+        {% else %}
+            <p class="empty">Sem observação registrada.</p>
         {% endif %}
+    </article>
 
-        <form method="post" action="/documentos/{{ documento.id }}/desfazer-revisao">
-            <button class="btn secondary" type="submit">desfazer revisão</button>
+    <article class="review-panel review-panel-edit">
+        <div class="panel-title">
+            <h2>Correção manual dos campos</h2>
+            <span>salva no MySQL</span>
+        </div>
+
+        <p class="review-status-note">Campos vazios aparecem em destaque. Corrija antes de aprovar.</p>
+
+        <form method="post" action="/documentos/{{ documento.id }}/editar" class="edit-form review-form">
+            <div class="form-grid review-form-grid">
+                <div class="form-field review-input {% if campo_pendente(documento.empresa) %}is-empty{% endif %}">
+                    <label for="empresa">Empresa</label>
+                    <input id="empresa" name="empresa" type="text" value="{{ documento.empresa or '' }}">
+                </div>
+
+                <div class="form-field review-input {% if campo_pendente(documento.numero_nf) %}is-empty{% endif %}">
+                    <label for="numero_nf">Número NF</label>
+                    <input id="numero_nf" name="numero_nf" type="text" value="{{ documento.numero_nf or '' }}">
+                </div>
+
+                <div class="form-field full review-input {% if campo_pendente(documento.chave_acesso) %}is-empty{% endif %}">
+                    <label for="chave_acesso">Chave de acesso</label>
+                    <input id="chave_acesso" name="chave_acesso" type="text" value="{{ documento.chave_acesso or '' }}">
+                </div>
+
+                <div class="form-field review-input {% if campo_pendente(documento.vencimento) %}is-empty{% endif %}">
+                    <label for="vencimento">Vencimento</label>
+                    <input id="vencimento" name="vencimento" type="date" value="{{ documento.vencimento or '' }}">
+                </div>
+
+                <div class="form-field review-input {% if campo_pendente(documento.valor_total) %}is-empty{% endif %}">
+                    <label for="valor_total">Valor total</label>
+                    <input id="valor_total" name="valor_total" type="text"
+                           value="{% if documento.valor_total is not none %}{{ '%.2f'|format(documento.valor_total) }}{% endif %}"
+                           placeholder="Ex.: 1025,22">
+                </div>
+
+                <div class="form-field full review-input {% if campo_pendente(documento.observacao_revisao) %}is-empty{% endif %}">
+                    <label for="observacao_revisao_edicao">Observação</label>
+                    <textarea id="observacao_revisao_edicao" name="observacao_revisao" rows="3">{{ documento.observacao_revisao or '' }}</textarea>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn" type="submit">Salvar correções</button>
+            </div>
         </form>
-    {% else %}
-        <form method="post" action="/documentos/{{ documento.id }}/revisar" class="review-form">
-            <label for="observacao_revisao">Observação da revisão</label>
-            <textarea id="observacao_revisao" name="observacao_revisao" rows="3" placeholder="Ex.: dados conferidos com a nota original"></textarea>
+    </article>
 
-            <button class="btn" type="submit">marcar como revisado</button>
-        </form>
-    {% endif %}
-</section>
+    <article class="review-panel review-panel-approval">
+        <div class="panel-title">
+            <h2>Aprovação</h2>
+            <span>próxima etapa</span>
+        </div>
 
-<section class="panel">
-    <div class="panel-title">
-        <h2>JSON padrão</h2>
-    </div>
+        <p class="review-approval-note">A aprovação não é automática. Ao confirmar, o documento segue para a próxima etapa do fluxo.</p>
 
-    {% if json_text %}
-        <pre>{{ json_text }}</pre>
-    {% else %}
-        <p class="empty">JSON não encontrado.</p>
-    {% endif %}
-</section>
+        {% if documento.revisado %}
+            <p class="review-ok">Documento revisado por {{ documento.revisado_por or "operador" }} em {{ documento.revisado_em }}.</p>
 
-<section class="panel">
-    <div class="panel-title">
-        <h2>Texto OCR bruto</h2>
-    </div>
+            {% if documento.observacao_revisao %}
+                <p class="review-note">{{ documento.observacao_revisao }}</p>
+            {% endif %}
 
-    {% if texto_ocr %}
-        <pre>{{ texto_ocr }}</pre>
-    {% else %}
-        <p class="empty">Texto OCR não encontrado.</p>
-    {% endif %}
+            <form method="post" action="/documentos/{{ documento.id }}/desfazer-revisao" class="review-actions">
+                <button class="btn secondary" type="submit">Desfazer revisão</button>
+            </form>
+        {% else %}
+            {% if documento.status == 'erro_ocr' %}
+                <p class="review-status-note">Este documento chegou com erro OCR; revise os campos antes de aprovar.</p>
+            {% else %}
+                <p class="review-status-note">Quando os campos estiverem conferidos, use o botão abaixo para avançar.</p>
+            {% endif %}
+
+            <form method="post" action="/documentos/{{ documento.id }}/revisar" class="review-form">
+                <label for="observacao_revisao_aprovacao">Observação da revisão</label>
+                <textarea id="observacao_revisao_aprovacao" name="observacao_revisao" rows="3" placeholder="Ex.: dados conferidos com a nota original"></textarea>
+
+                <div class="form-actions">
+                    <button class="btn" type="submit">Aprovar e avançar</button>
+                </div>
+            </form>
+        {% endif %}
+    </article>
+
+    <article class="review-panel review-panel-json">
+        <div class="panel-title">
+            <h2>JSON padrão</h2>
+            <span>resultado do pipeline</span>
+        </div>
+
+        {% if json_text %}
+            <pre>{{ json_text }}</pre>
+        {% else %}
+            <p class="empty">JSON não encontrado.</p>
+        {% endif %}
+    </article>
+
+    <article class="review-panel review-panel-ocr">
+        <div class="panel-title">
+            <h2>Texto OCR bruto</h2>
+            <span>conteúdo extraído</span>
+        </div>
+
+        {% if texto_ocr %}
+            <pre>{{ texto_ocr }}</pre>
+        {% else %}
+            <p class="empty">Texto OCR não encontrado.</p>
+        {% endif %}
+    </article>
 </section>
 {% endblock %}

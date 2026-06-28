@@ -41,9 +41,20 @@ def status_label(status):
     return STATUS_LABEL.get(status, status.replace("_", " ").title())
 
 
+def campo_pendente(valor):
+    if valor is None:
+        return True
+
+    return not str(valor).strip()
+
+
 @app.context_processor
 def inject_globals():
-    return dict(status_label=status_label, precisa_revisao=STATUS_PRECISA_REVISAO)
+    return dict(
+        status_label=status_label,
+        precisa_revisao=STATUS_PRECISA_REVISAO,
+        campo_pendente=campo_pendente,
+    )
 
 
 def extensao_permitida_upload(nome_arquivo):
@@ -783,13 +794,15 @@ def editar_documento(documento_id):
         documento_id
     ))
 
+    flash("Campos salvos. Revise os pendentes antes de aprovar.", "success")
+
     return redirect(url_for("documento_detalhe", documento_id=documento_id))
 
 
 @app.route("/documentos/<int:documento_id>/revisar", methods=["POST"])
 def revisar_documento(documento_id):
     documento = fetch_one("""
-        SELECT id
+        SELECT id, status
         FROM documentos
         WHERE id = %s
     """, (documento_id,))
@@ -798,6 +811,7 @@ def revisar_documento(documento_id):
         abort(404)
 
     observacao = request.form.get("observacao_revisao") or None
+    novo_status = "pendente_integracao" if documento["status"] in {"pendente_revisao", "erro_ocr"} else documento["status"]
 
     execute("""
         UPDATE documentos
@@ -806,12 +820,11 @@ def revisar_documento(documento_id):
             revisado_por = %s,
             revisado_em = NOW(),
             observacao_revisao = COALESCE(%s, observacao_revisao),
-            status = CASE
-                WHEN status = 'pendente_revisao' THEN 'pendente_integracao'
-                ELSE status
-            END
+            status = %s
         WHERE id = %s
-    """, ("operador_local", observacao, documento_id))
+    """, ("operador_local", observacao, novo_status, documento_id))
+
+    flash("Documento revisado e enviado para a próxima etapa.", "success")
 
     return redirect(url_for("documento_detalhe", documento_id=documento_id))
 
@@ -836,6 +849,8 @@ def desfazer_revisao_documento(documento_id):
             observacao_revisao = NULL
         WHERE id = %s
     """, (documento_id,))
+
+    flash("Revisão desfeita.", "warning")
 
     return redirect(url_for("documento_detalhe", documento_id=documento_id))
 
