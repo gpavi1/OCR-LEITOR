@@ -16,6 +16,7 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 from database.mysql_db import fetch_all, fetch_one, execute
+from exportacao.json_validado import exportar_documento_revisado
 
 
 app = Flask(__name__)
@@ -851,6 +852,63 @@ def desfazer_revisao_documento(documento_id):
     """, (documento_id,))
 
     flash("Revisão desfeita.", "warning")
+
+    return redirect(url_for("documento_detalhe", documento_id=documento_id))
+
+
+@app.route("/documentos/<int:documento_id>/exportar-json", methods=["POST"])
+def exportar_documento_json_validado(documento_id):
+    documento = fetch_one("""
+        SELECT
+            id,
+            cliente_id,
+            arquivo_nome,
+            empresa,
+            numero_nf,
+            chave_acesso,
+            vencimento,
+            valor_total,
+            status,
+            revisado,
+            revisado_por,
+            revisado_em,
+            json_path,
+            criado_em,
+            atualizado_em
+        FROM documentos
+        WHERE id = %s
+    """, (documento_id,))
+
+    if not documento:
+        abort(404)
+
+    resultado = exportar_documento_revisado(
+        documento_id,
+        obter_documento=lambda _documento_id: documento,
+        root_dir=ROOT_DIR,
+    )
+
+    integracao_id = _obter_integracao_manual(documento["cliente_id"])
+
+    if resultado["ok"]:
+        _registrar_tentativa_integracao(
+            documento_id=documento_id,
+            integracao_id=integracao_id,
+            status="sucesso",
+            destino_externo_id=resultado["caminho_relativo"],
+            resposta_resumida="JSON validado exportado localmente.",
+        )
+        flash(f"JSON validado exportado em {resultado['caminho_relativo']}.", "success")
+    else:
+        _registrar_tentativa_integracao(
+            documento_id=documento_id,
+            integracao_id=integracao_id,
+            status="falha",
+            destino_externo_id=f"json-validado-documento-{documento_id}",
+            erro=resultado["erro"],
+            resposta_resumida="Exportação local do JSON validado recusada ou falhou.",
+        )
+        flash(resultado["erro"], "error")
 
     return redirect(url_for("documento_detalhe", documento_id=documento_id))
 

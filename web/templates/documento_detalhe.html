@@ -195,6 +195,16 @@
                 <p class="review-note">{{ documento.observacao_revisao }}</p>
             {% endif %}
 
+            {% if documento.status in ['pendente_integracao', 'integrado'] %}
+                <p class="review-status-note">A exportação JSON validada é manual e salva somente em <code>exports/json/</code>.</p>
+
+                <form method="post" action="/documentos/{{ documento.id }}/exportar-json" class="review-actions">
+                    <button class="btn" type="submit">Exportar JSON validado</button>
+                </form>
+            {% else %}
+                <p class="review-status-note">A exportação JSON validada só fica disponível para documentos revisados em status seguro.</p>
+            {% endif %}
+
             <form method="post" action="/documentos/{{ documento.id }}/desfazer-revisao" class="review-actions">
                 <button class="btn secondary" type="submit">Desfazer revisão</button>
             </form>

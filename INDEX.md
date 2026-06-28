@@ -81,6 +81,7 @@
 
 - **[INDEX.md](INDEX.md)** - Este arquivo (navegação)
 - **[docs/integracao/ADR-PLAN-INTEGRACAO-01-api-entrada.md](docs/integracao/ADR-PLAN-INTEGRACAO-01-api-entrada.md)** - ADR da arquitetura segura da futura API de entrada
+- **[docs/exportacao/EXPORT-OCR-01_JSON_VALIDADO.md](docs/exportacao/EXPORT-OCR-01_JSON_VALIDADO.md)** - Exportação local do JSON validado revisado
 
 ### 🛠️ Utilidades
 - **[examples.py](examples.py)** - 12 exemplos práticos
@@ -153,6 +154,9 @@
 
 **Entender o planejamento da futura API de entrada**
 → [docs/integracao/ADR-PLAN-INTEGRACAO-01-api-entrada.md](docs/integracao/ADR-PLAN-INTEGRACAO-01-api-entrada.md)
+
+**Entender a exportação JSON validada local**
+→ [docs/exportacao/EXPORT-OCR-01_JSON_VALIDADO.md](docs/exportacao/EXPORT-OCR-01_JSON_VALIDADO.md)
 
 **Desenvolver o projeto**
 → [copilot-instructions.md](copilot-instructions.md)
