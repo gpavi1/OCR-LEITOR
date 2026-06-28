@@ -2,11 +2,14 @@
 
 ## 1. Objetivo
 
-Definir a arquitetura inicial para que o OCR-LEITOR exporte documentos fiscais revisados para sistemas externos por meio de contrato JSON, arquivo intermediário, API ou conector opcional em fases futuras.
+Definir a arquitetura inicial para que o OCR-LEITOR exporte documentos fiscais revisados para sistemas externos por meio de contrato JSON,
+arquivo intermediário, API ou conector opcional em fases futuras.
 
-O OCR-LEITOR deve atuar como origem confiável de dados documentais revisados. A saída principal deve ser um pacote JSON padronizado, versionado e validável, capaz de ser consumido futuramente por destinos como FechaMes Fiscal, Monday, Google Sheets, ERPs ou APIs internas.
+O OCR-LEITOR deve atuar como origem confiável de dados documentais revisados. A saída principal deve ser um pacote JSON padronizado,
+versionado e validável, capaz de ser consumido futuramente por destinos como FechaMes Fiscal, Monday, Google Sheets, ERPs ou APIs internas.
 
-Esta fase é exclusivamente arquitetural. Ela não implementa conector real, não cria integração real com FechaMes Fiscal, não cria API pública, não escreve em banco externo e não altera o processamento OCR/parser/core existente.
+Esta fase é exclusivamente arquitetural. Ela não implementa conector real, não cria integração real com FechaMes Fiscal, não cria API pública,
+não escreve em banco externo e não altera o processamento OCR/parser/core existente.
 
 ## 2. Princípios de segurança
 
@@ -53,9 +56,11 @@ Responsabilidades por etapa:
 
 O OCR-LEITOR entrega um pacote JSON validado. O sistema externo consome esse pacote sem acessar diretamente o banco do OCR-LEITOR.
 
-A fronteira entre sistemas deve ser o contrato JSON, não o banco de dados, não modelos internos e não imports diretos entre projetos. Essa decisão preserva independência, reduz risco operacional e permite que cada produto evolua sem quebrar o outro.
+A fronteira entre sistemas deve ser o contrato JSON, não o banco de dados, não os modelos internos e não imports diretos entre projetos.
+Essa decisão preserva independência, reduz risco operacional e permite que cada produto evolua sem quebrar o outro.
 
-Para integração futura com FechaMes Fiscal, a responsabilidade do OCR-LEITOR deve terminar na geração ou entrega do pacote validado. A responsabilidade do FechaMes Fiscal, ou de um importador intermediário, deve começar na leitura desse pacote e na aplicação das próprias regras internas.
+Para integração futura com FechaMes Fiscal, a responsabilidade do OCR-LEITOR deve terminar na geração ou entrega do pacote validado.
+A responsabilidade do FechaMes Fiscal, ou de um importador intermediário, deve começar na leitura desse pacote e na aplicação das próprias regras internas.
 
 Modelo de fronteira recomendado:
 
@@ -189,7 +194,9 @@ Antes de qualquer integração real com FechaMes Fiscal, a evolução deve ocorr
 2. Validador de contrato: confirma campos mínimos e formatos.
 3. Validação de compatibilidade com FechaMes: compara formato, sem escrever no banco do FechaMes.
 
-A etapa simulada deve provar que o OCR-LEITOR consegue gerar pacote consistente sem depender do FechaMes Fiscal. A validação de contrato deve impedir que documentos incompletos avancem. A validação de compatibilidade deve comparar nomes, formatos e regras de dados sem realizar importação real.
+A etapa simulada deve provar que o OCR-LEITOR consegue gerar pacote consistente sem depender do FechaMes Fiscal.
+A validação de contrato deve impedir que documentos incompletos avancem.
+A validação de compatibilidade deve comparar nomes, formatos e regras de dados sem realizar importação real.
 
 Critério de segurança para avançar:
 
