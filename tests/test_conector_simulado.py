@@ -42,6 +42,18 @@ def test_conector_simulado_rejeita_documento_nao_revisado(tmp_path):
     assert False, "documento nao revisado deveria ser rejeitado"
 
 
+def test_conector_simulado_rejeita_origem_invalida_pelo_validador(tmp_path):
+    payload = deepcopy(carregar_payload_exemplo())
+    payload["origem"] = "OUTRO-SISTEMA"
+
+    try:
+        exportar_json_simulado(payload, tmp_path)
+    except ValueError:
+        return
+
+    assert False, "origem invalida deveria ser rejeitada"
+
+
 def test_conector_simulado_rejeita_modo_nao_simulado(tmp_path):
     payload = deepcopy(carregar_payload_exemplo())
     payload["integracao"]["modo"] = "producao"

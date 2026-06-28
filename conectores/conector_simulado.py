@@ -2,6 +2,8 @@ import json
 import re
 from pathlib import Path
 
+from contratos.contrato_documento_fiscal_v1 import validar_contrato_documento_fiscal_v1
+
 
 PREFIXO_ARQUIVO = "ocr_leitor_documento_fiscal_v1_"
 
@@ -23,14 +25,8 @@ def gerar_nome_arquivo_simulado(payload):
 
 
 def exportar_json_simulado(payload, destino_dir):
-    if not isinstance(payload, dict):
-        raise ValueError("payload deve ser um dicionario")
-    if payload.get("origem") != "OCR-LEITOR":
-        raise ValueError("origem invalida para o conector simulado")
-    if payload.get("versao_contrato") != "ocr_leitor.documento_fiscal.v1":
-        raise ValueError("versao_contrato invalida para o conector simulado")
-    if (payload.get("revisao") or {}).get("revisado") is not True:
-        raise ValueError("documento precisa estar revisado")
+    validar_contrato_documento_fiscal_v1(payload)
+
     if (payload.get("integracao") or {}).get("modo") != "simulado":
         raise ValueError("conector simulado aceita apenas modo simulado")
 
