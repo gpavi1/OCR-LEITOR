@@ -5,6 +5,15 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Documentação
+
+- Definido o ADR `docs/integracao/ADR-PLAN-INTEGRACAO-01-api-entrada.md` com a arquitetura segura da futura API de entrada.
+- Registrada a ordem obrigatória `PLAN-INTEGRACAO-01 -> EXPORT-OCR-01 -> MARKDOWN-OCR-01 -> API-IN-01`.
+- Formalizado que a primeira API será local e controlada, sem exposição pública inicial, sem OCR automático e sem escrita direta no banco.
+- Formalizado que o JSON estruturado continuará como fonte oficial de integração e que o Markdown futuro será apenas relatório humano.
+
 ## [1.0.0] - 2026-06-16
 
 ### Adicionado

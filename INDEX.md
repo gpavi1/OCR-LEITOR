@@ -80,6 +80,7 @@
 - **[LICENSE.md](LICENSE.md)** - MIT License
 
 - **[INDEX.md](INDEX.md)** - Este arquivo (navegação)
+- **[docs/integracao/ADR-PLAN-INTEGRACAO-01-api-entrada.md](docs/integracao/ADR-PLAN-INTEGRACAO-01-api-entrada.md)** - ADR da arquitetura segura da futura API de entrada
 
 ### 🛠️ Utilidades
 - **[examples.py](examples.py)** - 12 exemplos práticos
@@ -149,6 +150,9 @@
 
 **Ver histórico de mudanças**
 → [CHANGELOG.md](CHANGELOG.md)
+
+**Entender o planejamento da futura API de entrada**
+→ [docs/integracao/ADR-PLAN-INTEGRACAO-01-api-entrada.md](docs/integracao/ADR-PLAN-INTEGRACAO-01-api-entrada.md)
 
 **Desenvolver o projeto**
 → [copilot-instructions.md](copilot-instructions.md)
