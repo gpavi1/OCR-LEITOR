@@ -82,9 +82,15 @@
 
                     <div class="history-actions">
                         {% if tentativa.documento_id %}
+                            {% if tentativa.status_atual not in ('pendente_integracao', 'integrado') %}
                             <form class="inline-form" method="post" action="/integracoes/documentos/{{ tentativa.documento_id }}/reenfileirar" onsubmit="return confirm('Reenfileirar este documento para integração?');">
                                 <button class="btn secondary compact-btn" type="submit">reenfileirar</button>
                             </form>
+                            {% elif tentativa.status_atual == 'integrado' %}
+                            <span class="muted">Documento integrado</span>
+                            {% else %}
+                            <span class="muted">Documento ja na fila</span>
+                            {% endif %}
 
                             <a class="btn" href="/documentos/{{ tentativa.documento_id }}">ver documento</a>
                         {% else %}

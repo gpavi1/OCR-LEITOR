@@ -635,6 +635,7 @@ def integracoes():
             chave_acesso,
             vencimento,
             valor_total,
+            revisado,
             revisado_por,
             revisado_em,
             status
@@ -667,7 +668,8 @@ def historico_integracoes():
             t.destino_externo_id,
             t.erro,
             t.resposta_resumida,
-            t.criado_em
+            t.criado_em,
+            d.status AS status_atual
         FROM integracao_tentativas t
         LEFT JOIN documentos d ON d.id = t.documento_id
         LEFT JOIN integracoes i ON i.id = t.integracao_id
