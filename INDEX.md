@@ -227,6 +227,9 @@
 **Checklist de segurança para liberar nova plataforma externa**
 → [docs/integracao/CHECKLIST_NOVA_INTEGRACAO.md](docs/integracao/CHECKLIST_NOVA_INTEGRACAO.md)
 
+**Menu operacional Windows (INSTALADOR-WINDOWS-OCR-01A)**
+→ Disponível em `OCR-LEITOR.cmd` na raiz do projeto
+
 **Desenvolver o projeto**
 → [copilot-instructions.md](copilot-instructions.md)
 
