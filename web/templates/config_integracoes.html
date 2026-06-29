@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-head integration-page-head">
+    <div>
+        <div class="eyebrow">OCR-S3A-C1</div>
+        <h1>Configura&ccedil;&atilde;o de Integra&ccedil;&otilde;es</h1>
+        <p>Esta tela &eacute; somente leitura. Ela n&atilde;o exibe tokens, n&atilde;o salva credenciais e n&atilde;o testa conex&atilde;o externa. Os status abaixo s&atilde;o calculados a partir das vari&aacute;veis de ambiente carregadas no processo local.</p>
+    </div>
+    <div class="actions integration-head-actions">
+        <a class="btn secondary" href="/integracoes">voltar para integra&ccedil;&otilde;es</a>
+    </div>
+</section>
+
+{% for plataforma in plataformas %}
+<section class="panel integration-platform-section">
+    <div class="platform-card-header">
+        <div>
+            <h2>{{ plataforma.nome }}</h2>
+            {% if plataforma.status_geral == "CONFIGURADA" %}
+                <span class="badge badge-ok">CONFIGURADA</span>
+            {% elif plataforma.status_geral == "INCOMPLETA" %}
+                <span class="badge badge-warning">INCOMPLETA</span>
+            {% elif plataforma.status_geral == "PLANEJADA" %}
+                <span class="badge badge-info">PLANEJADA</span>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if plataforma.observacao %}
+    <p class="muted platform-observation">{{ plataforma.observacao }}</p>
+    {% endif %}
+
+    <div class="platform-vars-table-wrapper">
+        <table class="platform-vars-table">
+            <thead>
+                <tr>
+                    <th>Vari&aacute;vel</th>
+                    <th>Nome da vari&aacute;vel</th>
+                    <th>Seguran&ccedil;a</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for var in plataforma.variaveis %}
+                <tr>
+                    <td>{{ var.rotulo }}</td>
+                    <td><code>{{ var.chave }}</code></td>
+                    <td>{% if var.sensivel %}credencial protegida{% else %}p&uacute;blica{% endif %}</td>
+                    <td>
+                        {% if var.status == "CONFIGURADO" %}
+                            <span class="badge badge-ok">CONFIGURADO</span>
+                        {% elif var.status == "AUSENTE" %}
+                            <span class="badge badge-empty">AUSENTE</span>
+                        {% elif var.status == "PLACEHOLDER" %}
+                            <span class="badge badge-warning">PLACEHOLDER</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endfor %}
+{% endblock %}

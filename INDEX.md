@@ -218,6 +218,9 @@
 **Modelo seguro de configuração para plataformas integradas (CONFIG-INTEGRACAO-SEGURA-01)**
 → [docs/integracao/CONFIG-INTEGRACAO-SEGURA-01.md](docs/integracao/CONFIG-INTEGRACAO-SEGURA-01.md)
 
+**Painel web de configuração de integrações (CONFIG-PLATAFORMA-WEB-01)**
+→ Disponível em `/integracoes/configuracao` no painel web
+
 **Template para criar nova integração no OCR-LEITOR**
 → [docs/integracao/MODELO_PLATAFORMA_INTEGRADA.md](docs/integracao/MODELO_PLATAFORMA_INTEGRADA.md)
 

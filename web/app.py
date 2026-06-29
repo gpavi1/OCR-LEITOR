@@ -1307,6 +1307,104 @@ def gerar_markdown_documento(documento_id):
     return redirect(url_for("documento_detalhe", documento_id=documento_id))
 
 
+PLATAFORMAS_INTEGRACAO = [
+    {
+        "id": "monday",
+        "nome": "Monday.com",
+        "status_plataforma": "suportada",
+        "variaveis": [
+            {"chave": "MONDAY_API_TOKEN", "rotulo": "Token da API", "sensivel": True},
+            {"chave": "MONDAY_BOARD_ID", "rotulo": "ID do Board", "sensivel": False},
+            {"chave": "MONDAY_COLUMN_EMPRESA", "rotulo": "Coluna: Empresa", "sensivel": False},
+            {"chave": "MONDAY_COLUMN_NUMERO_NF", "rotulo": "Coluna: N\u00famero NF", "sensivel": False},
+            {"chave": "MONDAY_COLUMN_CHAVE_ACESSO", "rotulo": "Coluna: Chave de Acesso", "sensivel": False},
+            {"chave": "MONDAY_COLUMN_VENCIMENTO", "rotulo": "Coluna: Vencimento", "sensivel": False},
+            {"chave": "MONDAY_COLUMN_VALOR_TOTAL", "rotulo": "Coluna: Valor Total", "sensivel": False},
+            {"chave": "MONDAY_COLUMN_OBSERVACAO", "rotulo": "Coluna: Observa\u00e7\u00e3o", "sensivel": False},
+        ],
+        "observacao": "Plataforma suportada. Configure por vari\u00e1veis de ambiente.",
+    },
+    {
+        "id": "google_sheets",
+        "nome": "Google Sheets",
+        "status_plataforma": "planejada",
+        "variaveis": [
+            {"chave": "GOOGLE_SHEETS_CREDENTIALS", "rotulo": "Credencial JSON", "sensivel": True},
+            {"chave": "GOOGLE_SHEETS_SPREADSHEET_ID", "rotulo": "ID da Planilha", "sensivel": False},
+            {"chave": "GOOGLE_SHEETS_ABA_NOME", "rotulo": "Nome da Aba", "sensivel": False},
+        ],
+        "observacao": "Integra\u00e7\u00e3o planejada para fase futura.",
+    },
+    {
+        "id": "erp_api",
+        "nome": "ERP / API pr\u00f3pria",
+        "status_plataforma": "planejada",
+        "variaveis": [
+            {"chave": "ERP_API_BASE_URL", "rotulo": "URL base da API", "sensivel": False},
+            {"chave": "ERP_API_TOKEN", "rotulo": "Token de autentica\u00e7\u00e3o", "sensivel": True},
+        ],
+        "observacao": "Integra\u00e7\u00e3o planejada para fase futura.",
+    },
+]
+
+
+def _classificar_variavel_config(valor):
+    if valor is None:
+        return "AUSENTE"
+    texto = str(valor).strip()
+    if not texto:
+        return "AUSENTE"
+    texto_lower = texto.lower()
+    placeholders = ("cole", "aqui", "exemplo", "nao_cole", "n\u00e3o_cole", "seu_")
+    if any(p in texto_lower for p in placeholders):
+        return "PLACEHOLDER"
+    if texto_lower.startswith("exemplo_"):
+        return "PLACEHOLDER"
+    return "CONFIGURADO"
+
+
+def _status_variaveis_plataforma(plataforma):
+    resultado = []
+    for var_info in plataforma["variaveis"]:
+        valor = os.getenv(var_info["chave"], "")
+        status = _classificar_variavel_config(valor)
+        resultado.append({
+            "chave": var_info["chave"],
+            "rotulo": var_info["rotulo"],
+            "sensivel": var_info["sensivel"],
+            "status": status,
+        })
+    return resultado
+
+
+def _montar_status_plataformas_integracao():
+    resultado = []
+    for plataforma in PLATAFORMAS_INTEGRACAO:
+        variaveis_status = _status_variaveis_plataforma(plataforma)
+        if plataforma["status_plataforma"] == "planejada":
+            status_geral = "PLANEJADA"
+        else:
+            statuses = {v["status"] for v in variaveis_status}
+            if statuses == {"CONFIGURADO"}:
+                status_geral = "CONFIGURADA"
+            else:
+                status_geral = "INCOMPLETA"
+        resultado.append({
+            "id": plataforma["id"],
+            "nome": plataforma["nome"],
+            "status_geral": status_geral,
+            "observacao": plataforma["observacao"],
+            "variaveis": variaveis_status,
+        })
+    return resultado
+
+
+@app.route("/integracoes/configuracao")
+def config_integracoes():
+    plataformas = _montar_status_plataformas_integracao()
+    return render_template("config_integracoes.html", plataformas=plataformas)
+
+
 if __name__ == "__main__":
     app.run(
         host="127.0.0.1",
