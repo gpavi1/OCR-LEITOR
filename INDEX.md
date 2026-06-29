@@ -194,6 +194,12 @@
 **Modelo CSV para controle do piloto**
 → [docs/operacao/MODELO_CONTROLE_PILOTO_EMPRESA.csv](docs/operacao/MODELO_CONTROLE_PILOTO_EMPRESA.csv)
 
+**Contrato seguro de payload Monday revisado (CONTRATO-MONDAY-01)**
+→ [docs/integracao/CONTRATO-MONDAY-01_PAYLOAD_REVISADO.md](docs/integracao/CONTRATO-MONDAY-01_PAYLOAD_REVISADO.md)
+
+**Criar payload Monday a partir de documento revisado**
+→ [conectores/monday_payload.py](conectores/monday_payload.py)
+
 **Desenvolver o projeto**
 → [copilot-instructions.md](copilot-instructions.md)
 

@@ -7,6 +7,10 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Adicionado
+
+- Contrato seguro de payload Monday a partir de documento revisado (`CONTRATO-MONDAY-01`): modulo puro `conectores/monday_payload.py` com funcoes de normalizacao, validacao e montagem de column_values; bloqueia documentos sem revisao ou fora de `pendente_integracao`; adiciona avisos para campos ausentes; prepara base para dry-run sem chamada externa; nao envia dados reais para Monday; nao altera parser, pipeline, banco, API, UI ou requirements.
+
 ### Corrigido
 
 - Ajuste cirúrgico do parser NF-e (`AJUSTE-OCR-01`): correção da extração de empresa, número NF e chave de acesso em DANFE com ruído OCR.
