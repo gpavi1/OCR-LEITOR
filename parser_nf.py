@@ -32,13 +32,27 @@ def extrair_chave_acesso(texto: str):
         return None
 
     padrao_quebrado = re.compile(r"(?:[0-9][\s.\-/]*){44}")
+    padrao_grupos = re.compile(
+        r"\b\d{4}[ \.\-/]\d{4}[ \.\-/]\d{4}[ \.\-/]\d{4}[ \.\-/]"
+        r"\d{4}[ \.\-/]\d{4}[ \.\-/]\d{4}[ \.\-/]\d{4}[ \.\-/]"
+        r"\d{4}[ \.\-/]\d{4}[ \.\-/]\d{4}\b"
+    )
     candidatos = []
 
-    # 1) Caminho principal: dígitos reais, aceitando espaços/quebras/pontos/hífens.
-    for match in padrao_quebrado.finditer(texto):
+    # 0) Busca primária: formato DANFE (11 grupos de 4 dígitos com separador).
+    #    Esse padrão é mais específico e evita capturar números de endereço.
+    for match in padrao_grupos.finditer(texto):
         apenas_digitos = re.sub(r"\D", "", match.group(0))
         if len(apenas_digitos) == 44:
             candidatos.append((match.start(), apenas_digitos))
+
+    # 1) Caminho principal: dígitos reais, aceitando espaços/quebras/pontos/hífens.
+    #    Só executa se o padrão de grupos não encontrou nada.
+    if not candidatos:
+        for match in padrao_quebrado.finditer(texto):
+            apenas_digitos = re.sub(r"\D", "", match.group(0))
+            if len(apenas_digitos) == 44:
+                candidatos.append((match.start(), apenas_digitos))
 
     # 2) Fallback: somente linhas/blocos com muitos dígitos recebem correção OCR.
     # Isso evita transformar palavras como ACESSO em números falsos.
@@ -162,6 +176,8 @@ EMPRESA_CABECALHOS_BLOQUEADOS = [
     "SEFAZ",
     "FOLHA",
     "SERIE",
+    "NOTA FISCAL",
+    "ELETRONICA",
 ]
 
 
@@ -175,6 +191,8 @@ def _eh_cabecalho_fiscal(linha_norm: str) -> bool:
     if any(cab in linha_norm for cab in EMPRESA_CABECALHOS_BLOQUEADOS):
         return True
     if re.search(r"\d", linha_norm):
+        return True
+    if all(len(w) <= 3 for w in linha_norm.split()) and len(linha_norm.split()) >= 2:
         return True
     return False
 
@@ -195,6 +213,9 @@ def _parece_nome_empresa(candidato_norm: str) -> bool:
     if tem_sufixo:
         return True
 
+    if not any(len(p) >= 6 for p in palavras):
+        return False
+
     return len(palavras) >= 3 and len(candidato_norm) >= 12
 
 
@@ -208,6 +229,8 @@ def extrair_empresa(texto: str):
     # Emitente normalmente fica no topo da nota.
     # Limitamos a busca para evitar pegar destinatario/remetente.
     limite = linhas[:60]
+
+    candidatos = []
 
     for idx, linha in enumerate(limite):
         linha_norm = _normalizar_texto(linha)
@@ -227,9 +250,16 @@ def extrair_empresa(texto: str):
         candidato = _limpar_espacos(candidato)
 
         if _parece_nome_empresa(candidato):
-            return candidato
+            candidatos.append(candidato)
 
-    return None
+    if not candidatos:
+        return None
+
+    for c in candidatos:
+        if any(c.endswith(f" {s}") or c == s for s in EMPRESA_SUFFIX_LINES):
+            return c
+
+    return candidatos[0]
 
 
 def extrair_numero_nf(texto: str):
@@ -248,6 +278,7 @@ def extrair_numero_nf(texto: str):
         r"\bNUMERO\s*(?:DA\s*)?(?:NF|NOTA)?\s*[:\-]?\s*(\d{1,9})\b",
         r"\bNF\s*[:\-]?\s*(\d{1,9})\b",
         r"\bNOTA\s+FISCAL\s*(?:NRO|N[º°O]|NUMERO)?\s*[:\-]?\s*(\d{1,9})\b",
+        r"(?:\*|#)\s*(\d{6,9})\b",
     ]
 
     for padrao in padroes_contextuais:

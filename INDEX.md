@@ -86,6 +86,7 @@
 - **[docs/exportacao/MARKDOWN-OCR-01_RELATORIO_HUMANO.md](docs/exportacao/MARKDOWN-OCR-01_RELATORIO_HUMANO.md)** - Relatório Markdown humano derivado do JSON validado
 - **[docs/operacao/OPS-OCR-01_LIMPEZA_AMBIENTE_TESTE.md](docs/operacao/OPS-OCR-01_LIMPEZA_AMBIENTE_TESTE.md)** - Limpeza segura do ambiente de testes
 - **[docs/diagnostico/DIAG-OCR-01_AUDITORIA_EXTRACAO.md](docs/diagnostico/DIAG-OCR-01_AUDITORIA_EXTRACAO.md)** - Auditoria assistida da extração OCR/parser
+- **[docs/diagnostico/AJUSTE-OCR-01_CORRECAO_PARSER.md](docs/diagnostico/AJUSTE-OCR-01_CORRECAO_PARSER.md)** - Correção cirúrgica do parser NF-e
 
 ### 🛠️ Utilidades
 - **[examples.py](examples.py)** - 12 exemplos práticos
@@ -173,6 +174,9 @@
 
 **Auditar extração OCR/parser com amostras privadas**
 → [docs/diagnostico/DIAG-OCR-01_AUDITORIA_EXTRACAO.md](docs/diagnostico/DIAG-OCR-01_AUDITORIA_EXTRACAO.md)
+
+**Corrigir parser NF-e (AJUSTE-OCR-01)**
+→ [docs/diagnostico/AJUSTE-OCR-01_CORRECAO_PARSER.md](docs/diagnostico/AJUSTE-OCR-01_CORRECAO_PARSER.md)
 
 **Desenvolver o projeto**
 → [copilot-instructions.md](copilot-instructions.md)
