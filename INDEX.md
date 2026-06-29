@@ -200,6 +200,12 @@
 **Criar payload Monday a partir de documento revisado**
 → [conectores/monday_payload.py](conectores/monday_payload.py)
 
+**Simular envio Monday sem chamada externa (MONDAY-DRYRUN-01)**
+→ [docs/integracao/MONDAY-DRYRUN-01_ENVIO_SIMULADO.md](docs/integracao/MONDAY-DRYRUN-01_ENVIO_SIMULADO.md)
+
+**Módulo de dry-run Monday**
+→ [conectores/monday_dryrun.py](conectores/monday_dryrun.py)
+
 **Desenvolver o projeto**
 → [copilot-instructions.md](copilot-instructions.md)
 

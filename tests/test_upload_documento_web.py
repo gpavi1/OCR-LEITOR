@@ -69,9 +69,9 @@ def test_app_nao_contem_pytesseract_no_upload():
     assert "pytesseract" not in conteudo
 
 
-def test_app_nao_contem_monday_no_upload():
+def test_app_nao_contem_monday_api_url():
     conteudo = APP_PATH.read_text(encoding="utf-8")
-    assert "Monday" not in conteudo and "monday" not in conteudo
+    assert "api.monday.com" not in conteudo
 
 
 def test_app_nao_contem_fechames():

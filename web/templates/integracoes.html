@@ -78,6 +78,9 @@
                         <div class="integration-action-row">
                             <a class="btn secondary" href="/documentos/{{ doc.id }}">ver documento</a>
                             <a class="btn secondary" href="/exportar/documentos/{{ doc.id }}.csv">CSV</a>
+                            <form method="post" action="/integracoes/documentos/{{ doc.id }}/monday-dryrun" class="inline-form">
+                                <button class="btn secondary compact-btn" type="submit">Simular Monday</button>
+                            </form>
                         </div>
 
                         <form method="post" action="/integracoes/documentos/{{ doc.id }}/marcar-integrado" onsubmit="return confirm('Confirmar que este documento foi integrado?');">

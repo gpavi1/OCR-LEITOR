@@ -44,9 +44,9 @@ def test_app_nao_contem_0_0_0_0():
     assert "0.0.0.0" not in conteudo
 
 
-def test_app_nao_contem_monday():
+def test_app_nao_contem_monday_api_url():
     conteudo = APP_PATH.read_text(encoding="utf-8")
-    assert "Monday" not in conteudo and "monday" not in conteudo
+    assert "api.monday.com" not in conteudo
 
 
 def test_app_nao_contem_fechames():

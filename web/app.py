@@ -19,6 +19,7 @@ if str(ROOT_DIR) not in sys.path:
 from database.mysql_db import fetch_all, fetch_one, execute
 from exportacao.json_validado import exportar_documento_revisado
 from exportacao.markdown_relatorio import gerar_markdown_documento_revisado
+from conectores.monday_dryrun import gerar_dryrun_monday
 
 
 app = Flask(__name__)
@@ -35,6 +36,9 @@ STATUS_LABEL = {
     "pendente_integracao": "Aguardando integração",
     "integrado": "Integrado",
     "falha_integracao": "Falha na integração",
+    "dry_run_apto": "Monday Dry-run: apto",
+    "dry_run_bloqueado": "Monday Dry-run: bloqueado",
+    "dry_run_erro": "Monday Dry-run: erro",
     "erro_ocr": "Erro OCR — revisar",
 }
 
@@ -235,6 +239,37 @@ def _obter_integracao_manual(cliente_id):
             'Operacao Manual Local',
             TRUE,
             JSON_OBJECT()
+        )
+    """, (cliente_id,))
+
+
+def _obter_integracao_dryrun(cliente_id):
+    integracao = fetch_one("""
+        SELECT id
+        FROM integracoes
+        WHERE cliente_id = %s
+          AND tipo = 'monday_dryrun'
+          AND ativo = TRUE
+        LIMIT 1
+    """, (cliente_id,))
+
+    if integracao:
+        return integracao["id"]
+
+    return execute("""
+        INSERT INTO integracoes (
+            cliente_id,
+            tipo,
+            nome,
+            ativo,
+            config_json
+        )
+        VALUES (
+            %s,
+            'monday_dryrun',
+            'Monday Dry-run Local',
+            TRUE,
+            JSON_OBJECT('envio_real', FALSE)
         )
     """, (cliente_id,))
 
@@ -738,6 +773,56 @@ def registrar_falha_integracao(documento_id):
         erro=erro,
         resposta_resumida="Falha de integração registrada manualmente."
     )
+
+    return redirect(url_for("historico_integracoes"))
+
+
+@app.route("/integracoes/documentos/<int:documento_id>/monday-dryrun", methods=["POST"])
+def simular_monday_documento(documento_id):
+    documento = fetch_one("""
+        SELECT *
+        FROM documentos
+        WHERE id = %s
+    """, (documento_id,))
+
+    if not documento:
+        abort(404)
+
+    integracao_id = _obter_integracao_dryrun(documento.get("cliente_id") or 0)
+
+    try:
+        resultado = gerar_dryrun_monday(documento)
+
+        if resultado["status"] == "apto":
+            _registrar_tentativa_integracao(
+                documento_id=documento_id,
+                integracao_id=integracao_id,
+                status="dry_run_apto",
+                destino_externo_id=f"monday-dryrun-documento-{documento_id}",
+                resposta_resumida=resultado.get("mensagem"),
+            )
+            flash("Monday dry-run: documento apto para envio.", "success")
+        else:
+            erro_texto = "; ".join(resultado.get("bloqueios") or [])
+            _registrar_tentativa_integracao(
+                documento_id=documento_id,
+                integracao_id=integracao_id,
+                status="dry_run_bloqueado",
+                destino_externo_id=f"monday-dryrun-documento-{documento_id}",
+                erro=erro_texto or "Documento bloqueado para dry-run.",
+                resposta_resumida=resultado.get("mensagem"),
+            )
+            flash(f"Monday dry-run: {resultado.get('mensagem')}", "warning")
+    except Exception as exc:
+        _registrar_tentativa_integracao(
+            documento_id=documento_id,
+            integracao_id=integracao_id,
+            status="dry_run_erro",
+            destino_externo_id=f"monday-dryrun-documento-{documento_id}",
+            erro=str(exc)[:2000],
+            resposta_resumida="Excecao local durante dry-run.",
+        )
+        flash(f"Erro no dry-run: {exc}", "error")
 
     return redirect(url_for("historico_integracoes"))
 
