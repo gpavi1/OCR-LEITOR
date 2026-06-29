@@ -100,3 +100,8 @@ aplicar_patch_*.py
 # Backups operacionais de teste
 _backup_testes/
 exports/
+
+# Amostras e relatorios privados de diagnostico OCR
+_amostras_privadas/
+relatorios_ocr/
+diagnosticos_ocr/
