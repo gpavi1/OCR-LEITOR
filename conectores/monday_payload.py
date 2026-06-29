@@ -25,7 +25,14 @@ def _texto_ou_none(valor) -> Optional[str]:
 
 
 def _bool_revisado(valor) -> bool:
-    return valor is True
+    if isinstance(valor, bool):
+        return valor
+    if valor is None:
+        return False
+    if isinstance(valor, int):
+        return valor == 1
+    texto = str(valor).strip().lower()
+    return texto in ("1", "true", "sim", "s", "yes")
 
 
 def _normalizar_data_iso(valor) -> Optional[str]:

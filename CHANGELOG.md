@@ -19,6 +19,7 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Corrigido
 
+- Interpretação do campo revisado vindo do MySQL como inteiro 1 (`FIX-MONDAY-REVISADO-01`): corrige `_bool_revisado` em `conectores/monday_payload.py` para aceitar int 1, str "1", "true", "sim", "s", "yes" e variantes maiúsculas/minúsculas; mantém bloqueio para 0, "0", "false", "nao", "não", None, vazio, espaços; valida contrato, dry-run e envio controlado com valores booleanos e inteiros; não altera banco, parser, OCR pipeline, UI ou requirements.
 - Ajuste cirúrgico do parser NF-e (`AJUSTE-OCR-01`): correção da extração de empresa, número NF e chave de acesso em DANFE com ruído OCR.
 - Melhoria do parser para layouts variados (`AJUSTE-OCR-02`): distinção emitente vs tomador/destinatário, captura de NF em padrões variados (NF-e No., No., NFS-e:), captura de valor total por contexto (TOTAL GERAL DA NOTA, VALOR DOS SERVICOS, DUPLICATA/FATURA), bloqueio de chave falsa em NFS-e.
 
