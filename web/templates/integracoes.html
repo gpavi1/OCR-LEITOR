@@ -81,6 +81,10 @@
                             <form method="post" action="/integracoes/documentos/{{ doc.id }}/monday-dryrun" class="inline-form">
                                 <button class="btn secondary compact-btn" type="submit">Simular Monday</button>
                             </form>
+                            <form method="post" action="/integracoes/documentos/{{ doc.id }}/enviar-monday" class="inline-form" onsubmit="return confirm('Confirmar envio REAL para Monday?');">
+                                <input type="hidden" name="confirmar" value="sim">
+                                <button class="btn compact-btn" type="submit">Enviar para Monday</button>
+                            </form>
                         </div>
 
                         <form method="post" action="/integracoes/documentos/{{ doc.id }}/marcar-integrado" onsubmit="return confirm('Confirmar que este documento foi integrado?');">

@@ -206,6 +206,10 @@
                 <form method="post" action="/integracoes/documentos/{{ documento.id }}/monday-dryrun" class="review-actions">
                     <button class="btn secondary" type="submit">Simular Monday</button>
                 </form>
+                <form method="post" action="/integracoes/documentos/{{ documento.id }}/enviar-monday" class="review-actions" onsubmit="return confirm('Confirmar envio REAL para Monday?');">
+                    <input type="hidden" name="confirmar" value="sim">
+                    <button class="btn" type="submit">Enviar para Monday</button>
+                </form>
                 {% endif %}
 
                 <p class="review-status-note">O relatório Markdown é apenas leitura humana e fica salvo em <code>exports/markdown/</code>.</p>

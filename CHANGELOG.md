@@ -9,9 +9,13 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Adicionado
 
+- Envio real controlado de 1 documento revisado para Monday (`MONDAY-ENVIO-APROVADO-01`): modulo `conectores/monday_envio.py` com funcao `enviar_documento_monday(token, board_id, mapa_colunas, post_func=...)` — duas mutacoes GraphQL via variables (create_item + change_multiple_column_values), validacao de config (token, board_id, colunas) antes de chamar API, registro de `monday_envio_sucesso/falha/bloqueado` em `integracao_tentativas`, atualiza `documentos.status` para `integrado` apenas em sucesso, bloqueia reenvio por duplicidade. Rota POST `/integracoes/documentos/<id>/enviar-monday` com `confirmar=sim` obrigatorio. Botoes "Enviar para Monday" na fila e no detalhe (condicional `pendente_integracao`). Testes injetam `post_func` fake — zero rede, zero banco, zero OCR. Tag `monday-envio-aprovado-01-ok`.
+
 - Simulacao segura de envio Monday sem chamada externa (`MONDAY-DRYRUN-01`): modulo `conectores/monday_dryrun.py` com funcao `gerar_dryrun_monday` que valida documento revisado, monta payload e column_values simuladas; registra dry-run em `integracao_tentativas` com status `dry_run_apto`, `dry_run_bloqueado` ou `dry_run_erro`; rota POST `/integracoes/documentos/<id>/monday-dryrun` no painel; botoes "Simular Monday" na fila de integracao e no detalhe do documento; nao altera status do documento para integrado; nao chama API externa; nao usa token.
 
 - Contrato seguro de payload Monday a partir de documento revisado (`CONTRATO-MONDAY-01`): modulo puro `conectores/monday_payload.py` com funcoes de normalizacao, validacao e montagem de column_values; bloqueia documentos sem revisao ou fora de `pendente_integracao`; adiciona avisos para campos ausentes; prepara base para dry-run sem chamada externa; nao envia dados reais para Monday; nao altera parser, pipeline, banco, API, UI ou requirements.
+
+- Documento de configuracao exemplar (`MONDAY_CONFIG_EXEMPLO.md`): lista todas as 8 variaveis de ambiente necessarias para envio real Monday, com placeholders ficticios e instrucoes de seguranca (nunca commit .env, nunca expor token/board_id).
 
 ### Corrigido
 

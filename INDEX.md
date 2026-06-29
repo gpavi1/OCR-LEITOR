@@ -206,6 +206,15 @@
 **Módulo de dry-run Monday**
 → [conectores/monday_dryrun.py](conectores/monday_dryrun.py)
 
+**Enviar documento revisado para Monday (envio real controlado MONDAY-ENVIO-APROVADO-01)**
+→ [docs/integracao/MONDAY-ENVIO-APROVADO-01_ENVIO_REAL_CONTROLADO.md](docs/integracao/MONDAY-ENVIO-APROVADO-01_ENVIO_REAL_CONTROLADO.md)
+
+**Módulo de envio real Monday**
+→ [conectores/monday_envio.py](conectores/monday_envio.py)
+
+**Configuração segura das variáveis de ambiente do Monday**
+→ [docs/integracao/MONDAY_CONFIG_EXEMPLO.md](docs/integracao/MONDAY_CONFIG_EXEMPLO.md)
+
 **Desenvolver o projeto**
 → [copilot-instructions.md](copilot-instructions.md)
 

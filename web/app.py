@@ -20,6 +20,7 @@ from database.mysql_db import fetch_all, fetch_one, execute
 from exportacao.json_validado import exportar_documento_revisado
 from exportacao.markdown_relatorio import gerar_markdown_documento_revisado
 from conectores.monday_dryrun import gerar_dryrun_monday
+from conectores.monday_envio import enviar_documento_monday
 
 
 app = Flask(__name__)
@@ -39,6 +40,9 @@ STATUS_LABEL = {
     "dry_run_apto": "Monday Dry-run: apto",
     "dry_run_bloqueado": "Monday Dry-run: bloqueado",
     "dry_run_erro": "Monday Dry-run: erro",
+    "monday_envio_sucesso": "Monday Envio Real: sucesso",
+    "monday_envio_falha": "Monday Envio Real: falha",
+    "monday_envio_bloqueado": "Monday Envio Real: bloqueado",
     "erro_ocr": "Erro OCR — revisar",
 }
 
@@ -157,6 +161,59 @@ def _valor_decimal_br(valor):
         return Decimal(texto_valor)
     except InvalidOperation:
         return None
+
+
+def _obter_integracao_monday_envio(cliente_id):
+    integracao = fetch_one("""
+        SELECT id
+        FROM integracoes
+        WHERE cliente_id = %s
+          AND tipo = 'monday'
+          AND ativo = TRUE
+        LIMIT 1
+    """, (cliente_id,))
+    if integracao:
+        return integracao["id"]
+    return execute("""
+        INSERT INTO integracoes (
+            cliente_id, tipo, nome, ativo, config_json
+        )
+        VALUES (
+            %s, 'monday', 'Monday Envio Real Local', TRUE,
+            JSON_OBJECT('envio_real', TRUE, 'anexo', FALSE)
+        )
+    """, (cliente_id,))
+
+
+def _config_monday_envio():
+    token = os.getenv("MONDAY_API_TOKEN", "")
+    board_id = os.getenv("MONDAY_BOARD_ID", "")
+    mapa_colunas = {}
+    col_mapping = {
+        "empresa": "MONDAY_COLUMN_EMPRESA",
+        "numero_nf": "MONDAY_COLUMN_NUMERO_NF",
+        "chave_acesso": "MONDAY_COLUMN_CHAVE_ACESSO",
+        "vencimento": "MONDAY_COLUMN_VENCIMENTO",
+        "valor_total": "MONDAY_COLUMN_VALOR_TOTAL",
+        "observacao_revisao": "MONDAY_COLUMN_OBSERVACAO",
+    }
+    for campo, env_var in col_mapping.items():
+        valor = os.getenv(env_var, "")
+        if valor:
+            mapa_colunas[campo] = valor
+    return token, board_id, mapa_colunas
+
+
+def _validar_duplicidade_monday(documento_id):
+    existente = fetch_one("""
+        SELECT id
+        FROM integracao_tentativas
+        WHERE documento_id = %s
+          AND status = 'monday_envio_sucesso'
+          AND destino_externo_id IS NOT NULL
+        LIMIT 1
+    """, (documento_id,))
+    return existente is not None
 
 
 def _texto_ou_none(valor):
@@ -823,6 +880,90 @@ def simular_monday_documento(documento_id):
             resposta_resumida="Excecao local durante dry-run.",
         )
         flash(f"Erro no dry-run: {exc}", "error")
+
+    return redirect(url_for("historico_integracoes"))
+
+
+@app.route("/integracoes/documentos/<int:documento_id>/enviar-monday", methods=["POST"])
+def enviar_monday_documento(documento_id):
+    documento = fetch_one("""
+        SELECT *
+        FROM documentos
+        WHERE id = %s
+    """, (documento_id,))
+
+    if not documento:
+        abort(404)
+
+    confirmar = request.form.get("confirmar", "")
+    if confirmar != "sim":
+        flash(
+            "Envio para Monday requer confirmacao explicita "
+            "(confirmar=sim). Nenhuma alteracao foi feita.",
+            "warning",
+        )
+        return redirect(url_for("documento_detalhe", documento_id=documento_id))
+
+    token, board_id, mapa_colunas = _config_monday_envio()
+    integracao_id = _obter_integracao_monday_envio(
+        documento.get("cliente_id") or 0
+    )
+
+    try:
+        resultado = enviar_documento_monday(
+            documento, token, board_id, mapa_colunas,
+        )
+
+        if resultado["status"] == "sucesso":
+            _registrar_tentativa_integracao(
+                documento_id=documento_id,
+                integracao_id=integracao_id,
+                status="monday_envio_sucesso",
+                destino_externo_id=resultado["item_id"],
+                resposta_resumida=(
+                    f"Item criado no Monday (ID {resultado['item_id']})."
+                ),
+            )
+            execute("""
+                UPDATE documentos
+                SET status = 'integrado',
+                    atualizado_em = NOW()
+                WHERE id = %s
+            """, (documento_id,))
+            flash("Documento enviado para Monday com sucesso!", "success")
+        elif resultado["status"] == "bloqueado":
+            bloqueios = "; ".join(resultado.get("bloqueios") or [])
+            _registrar_tentativa_integracao(
+                documento_id=documento_id,
+                integracao_id=integracao_id,
+                status="monday_envio_bloqueado",
+                erro=bloqueios or "Documento bloqueado para envio Monday.",
+                resposta_resumida=resultado.get("mensagem"),
+            )
+            flash(
+                "Monday: " + (resultado.get("mensagem") or "Documento bloqueado."),
+                "warning",
+            )
+        else:
+            erro_texto = resultado.get("erro") or "Erro desconhecido na API Monday."
+            _registrar_tentativa_integracao(
+                documento_id=documento_id,
+                integracao_id=integracao_id,
+                status="monday_envio_falha",
+                destino_externo_id=resultado.get("item_id"),
+                erro=erro_texto[:2000],
+                resposta_resumida=resultado.get("mensagem"),
+            )
+            flash(f"Falha no envio Monday: {erro_texto}", "error")
+    except Exception as exc:
+        _registrar_tentativa_integracao(
+            documento_id=documento_id,
+            integracao_id=integracao_id,
+            status="monday_envio_falha",
+            erro=str(exc)[:2000],
+            resposta_resumida="Excecao local durante envio Monday.",
+        )
+        flash(f"Erro no envio Monday: {exc}", "error")
 
     return redirect(url_for("historico_integracoes"))
 
