@@ -76,23 +76,27 @@ test_monday.py
 test_monday_auth.py
 test_monday_create.py
 
-# OCR local / segurança
+# OCR local / seguranï¿½a
 .env
 .env.*
 !.env.example
 
-# Saídas e arquivos processados
+# Saï¿½das e arquivos processados
 output/
 input/
 processed/
 erro/
 logs/
 
-# Cache / temporários
+# Cache / temporï¿½rios
 __pycache__/
 .pytest_cache/
 *.pyc
 
-# Backups e scripts temporários de patch
+# Backups e scripts temporï¿½rios de patch
 *.bak*
 aplicar_patch_*.py
+
+# Backups operacionais de teste
+_backup_testes/
+exports/

@@ -84,6 +84,7 @@
 - **[docs/integracao/API-IN-01_ENTRADA_DOCUMENTOS.md](docs/integracao/API-IN-01_ENTRADA_DOCUMENTOS.md)** - API local autenticada para entrada controlada de documentos
 - **[docs/exportacao/EXPORT-OCR-01_JSON_VALIDADO.md](docs/exportacao/EXPORT-OCR-01_JSON_VALIDADO.md)** - Exportação local do JSON validado revisado
 - **[docs/exportacao/MARKDOWN-OCR-01_RELATORIO_HUMANO.md](docs/exportacao/MARKDOWN-OCR-01_RELATORIO_HUMANO.md)** - Relatório Markdown humano derivado do JSON validado
+- **[docs/operacao/OPS-OCR-01_LIMPEZA_AMBIENTE_TESTE.md](docs/operacao/OPS-OCR-01_LIMPEZA_AMBIENTE_TESTE.md)** - Limpeza segura do ambiente de testes
 
 ### 🛠️ Utilidades
 - **[examples.py](examples.py)** - 12 exemplos práticos
@@ -165,6 +166,9 @@
 
 **Entender o relatório Markdown humano local**
 → [docs/exportacao/MARKDOWN-OCR-01_RELATORIO_HUMANO.md](docs/exportacao/MARKDOWN-OCR-01_RELATORIO_HUMANO.md)
+
+**Limpar o ambiente de testes com backup**
+→ [docs/operacao/OPS-OCR-01_LIMPEZA_AMBIENTE_TESTE.md](docs/operacao/OPS-OCR-01_LIMPEZA_AMBIENTE_TESTE.md)
 
 **Desenvolver o projeto**
 → [copilot-instructions.md](copilot-instructions.md)

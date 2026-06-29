@@ -9,6 +9,7 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Documentação
 
+- Implementada a fase `OPS-OCR-01` com limpeza segura do ambiente de testes e backup em `_backup_testes/`.
 - Implementada a fase `API-IN-01` com API local autenticada para entrada controlada de documentos em `input/`.
 - Implementada a fase `MARKDOWN-OCR-01` com geração local e manual do relatório Markdown humano em `exports/markdown/`.
 - Implementada a fase `EXPORT-OCR-01` com exportação local, segura e validada do JSON revisado em `exports/json/`.
