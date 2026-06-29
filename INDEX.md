@@ -182,6 +182,9 @@
 **Corrigir parser NF-e (AJUSTE-OCR-01)**
 → [docs/diagnostico/AJUSTE-OCR-01_CORRECAO_PARSER.md](docs/diagnostico/AJUSTE-OCR-01_CORRECAO_PARSER.md)
 
+**Melhorar parser para layouts variados (AJUSTE-OCR-02)**
+→ [docs/diagnostico/AJUSTE-OCR-02_LAYOUTS_VARIADOS.md](docs/diagnostico/AJUSTE-OCR-02_LAYOUTS_VARIADOS.md)
+
 **Desenvolver o projeto**
 → [copilot-instructions.md](copilot-instructions.md)
 

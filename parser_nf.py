@@ -67,7 +67,14 @@ def extrair_chave_acesso(texto: str):
                     candidatos.append((0, apenas_digitos))
 
     # 3) Último fallback: compactar apenas os dígitos originais do documento.
+    #     Só executa se houver contexto explícito de chave de acesso no texto.
     if not candidatos:
+        texto_norm = _normalizar_texto(texto)
+        if not any(
+            kw in texto_norm
+            for kw in ["CHAVE DE ACESSO", "CHAVE ACESSO", "DANFE", "NF-E"]
+        ):
+            return None
         compacto = re.sub(r"\D", "", texto)
         match = re.search(r"\d{44}", compacto)
         return match.group(0) if match else None
@@ -156,6 +163,7 @@ EMPRESA_CABECALHOS_BLOQUEADOS = [
     "DANFE",
     "NOTA FISCAL ELETRONICA",
     "DOCUMENTO AUXILIAR",
+    "DOCUMENTO",
     "NATUREZA DA OPERACAO",
     "PROTOCOLO DE AUTORIZACAO",
     "INSCRICAO ESTADUAL",
@@ -178,6 +186,23 @@ EMPRESA_CABECALHOS_BLOQUEADOS = [
     "SERIE",
     "NOTA FISCAL",
     "ELETRONICA",
+    "CODIGO DE VERIFICACAO",
+    "COMPETENCIA",
+]
+
+EMPRESA_BOUNDARY_MARKERS = [
+    "DESTINATARIO",
+    "TOMADOR DOS SERVICOS",
+]
+
+EMPRESA_SPLIT_KEYWORDS = [
+    " NOTA FISCAL",
+    " NF-E",
+    " DANFE",
+]
+
+EMPRESA_LINE_START_BLOCK = [
+    "RECEBEMOS",
 ]
 
 
@@ -226,26 +251,36 @@ def extrair_empresa(texto: str):
     linhas = [_limpar_espacos(linha) for linha in texto.splitlines()]
     linhas = [linha for linha in linhas if linha]
 
-    # Emitente normalmente fica no topo da nota.
-    # Limitamos a busca para evitar pegar destinatario/remetente.
-    limite = linhas[:60]
+    linhas_norm = [_normalizar_texto(linha) for linha in linhas]
+
+    boundary_idx = len(linhas_norm)
+    for idx, ln in enumerate(linhas_norm):
+        if any(marker in ln for marker in EMPRESA_BOUNDARY_MARKERS):
+            boundary_idx = idx
+            break
+
+    limite = linhas_norm[:boundary_idx]
 
     candidatos = []
 
-    for idx, linha in enumerate(limite):
-        linha_norm = _normalizar_texto(linha)
-        if _eh_cabecalho_fiscal(linha_norm):
+    for idx, linha_norm in enumerate(limite):
+        if any(linha_norm.startswith(palavra) for palavra in EMPRESA_LINE_START_BLOCK):
             continue
-
-        proxima_norm = ""
-        if idx + 1 < len(limite):
-            proxima_norm = _normalizar_texto(limite[idx + 1])
 
         candidato = linha_norm
 
-        # Caso comum em NF: nome em uma linha e LTDA/ME/EIRELI na linha seguinte.
-        if proxima_norm in EMPRESA_SUFFIX_LINES:
-            candidato = f"{linha_norm} {proxima_norm.replace('.', '')}"
+        for split_kw in EMPRESA_SPLIT_KEYWORDS:
+            if split_kw in candidato:
+                candidato = candidato.split(split_kw)[0].strip()
+                break
+
+        if _eh_cabecalho_fiscal(candidato):
+            continue
+
+        if idx + 1 < len(limite):
+            prox_norm = limite[idx + 1]
+            if prox_norm in EMPRESA_SUFFIX_LINES:
+                candidato = f"{candidato} {prox_norm.replace('.', '')}"
 
         candidato = _limpar_espacos(candidato)
 
@@ -274,10 +309,12 @@ def extrair_numero_nf(texto: str):
 
     padroes_contextuais = [
         r"\bNRO\s*[:\-]?\s*(\d{1,9})\b",
-        r"\bN[º°O]\s*[:\-]?\s*(\d{1,9})\b",
+        r"\bN[º°Oo][\.\s]*[:\-]?\s*(\d{1,9})\b",
         r"\bNUMERO\s*(?:DA\s*)?(?:NF|NOTA)?\s*[:\-]?\s*(\d{1,9})\b",
         r"\bNF\s*[:\-]?\s*(\d{1,9})\b",
-        r"\bNOTA\s+FISCAL\s*(?:NRO|N[º°O]|NUMERO)?\s*[:\-]?\s*(\d{1,9})\b",
+        r"\bNF-E\s+NO?\.?\s*[:\-]?\s*(\d{1,9})\b",
+        r"\b(?:NUMERO\s+)?NFS-E\s*[:\-]?\s*(\d{1,9})\b",
+        r"\bNOTA\s+FISCAL\s*(?:NRO|N[º°Oo]|NUMERO)?\s*[:\-]?\s*(\d{1,9})\b",
         r"(?:\*|#)\s*(\d{6,9})\b",
     ]
 
@@ -328,6 +365,8 @@ def extrair_valor_total(texto: str):
         r"VALOR\s+TOTAL\s+DA\s+NOTA\s+FISCAL\s*[\r\n\s]+(?:R\$)?\s*([0-9]{1,3}(?:\.[0-9]{3})*,[0-9]{2}|[0-9]+,[0-9]{2})",
         r"VALOR\s+TOTAL\s+DA\s+NOTA\s*[\r\n\s]+(?:R\$)?\s*([0-9]{1,3}(?:\.[0-9]{3})*,[0-9]{2}|[0-9]+,[0-9]{2})",
         r"TOTAL\s+DA\s+NOTA\s+FISCAL\s*[\r\n\s]+(?:R\$)?\s*([0-9]{1,3}(?:\.[0-9]{3})*,[0-9]{2}|[0-9]+,[0-9]{2})",
+        r"TOTAL\s+GERAL\s+DA\s+NOTA\s*[:\-]?\s*(?:R\$)?\s*([0-9]{1,3}(?:\.[0-9]{3})*,[0-9]{2}|[0-9]+,[0-9]{2})",
+        r"VALOR\s+DOS\s+SERVICOS\s*(?:R\$)?\s*([0-9]{1,3}(?:\.[0-9]{3})*,[0-9]{2}|[0-9]+,[0-9]{2})",
     ]
 
     for padrao in padroes:
@@ -335,7 +374,7 @@ def extrair_valor_total(texto: str):
         if match:
             return _parse_valor_brl(match.group(1))
 
-    # Fallback controlado: procura a linha do rótulo e pega o próximo valor monetário.
+    # Fallback 1: procura a linha do rótulo e pega o próximo valor monetário.
     linhas = [_normalizar_texto(linha) for linha in texto.splitlines()]
     for idx, linha in enumerate(linhas):
         if "VALOR TOTAL DA NOTA FISCAL" in linha or "VALOR TOTAL DA NOTA" in linha:
@@ -343,6 +382,28 @@ def extrair_valor_total(texto: str):
             valores = re.findall(r"(?:R\$)?\s*([0-9]{1,3}(?:\.[0-9]{3})*,[0-9]{2}|[0-9]+,[0-9]{2})", janela)
             if valores:
                 return _parse_valor_brl(valores[-1])
+
+        # Fallback 2: TOTAL GERAL DA NOTA em linha específica
+        if "TOTAL GERAL DA NOTA" in linha:
+            janela = " ".join(linhas[idx:idx + 3])
+            valores = re.findall(r"R?\$?\s*([0-9]{1,3}(?:\.[0-9]{3})*,[0-9]{2}|[0-9]+,[0-9]{2})", janela)
+            if valores:
+                return _parse_valor_brl(valores[-1])
+
+        # Fallback 3: VALOR DOS SERVICOS em linha específica
+        if "VALOR DOS SERVICOS" in linha:
+            janela = " ".join(linhas[idx:idx + 2])
+            valores = re.findall(r"R?\$?\s*([0-9]{1,3}(?:\.[0-9]{3})*,[0-9]{2}|[0-9]+,[0-9]{2})", janela)
+            if valores:
+                return _parse_valor_brl(valores[0])
+
+    # Fallback 4: valores próximos de DUPLICATA/FATURA/PARCELA/COBRANCA com R$
+    for idx, linha in enumerate(linhas):
+        if any(kw in linha for kw in ["DUPLICATA", "FATURA", "PARCELA", "COBRANCA"]):
+            janela = " ".join(linhas[idx:idx + 5])
+            valores = re.findall(r"R\$\s*([0-9]{1,3}(?:\.[0-9]{3})*,[0-9]{2}|[0-9]+,[0-9]{2})", janela)
+            if valores:
+                return _parse_valor_brl(valores[0])
 
     return None
 

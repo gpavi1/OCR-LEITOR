@@ -10,11 +10,13 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Corrigido
 
 - Ajuste cirúrgico do parser NF-e (`AJUSTE-OCR-01`): correção da extração de empresa, número NF e chave de acesso em DANFE com ruído OCR.
+- Melhoria do parser para layouts variados (`AJUSTE-OCR-02`): distinção emitente vs tomador/destinatário, captura de NF em padrões variados (NF-e No., No., NFS-e:), captura de valor total por contexto (TOTAL GERAL DA NOTA, VALOR DOS SERVICOS, DUPLICATA/FATURA), bloqueio de chave falsa em NFS-e.
 
 ### Documentação
 
 - Implementada a fase `DIAG-OCR-01` com auditoria local da extração OCR/parser e relatórios privados.
 - Implementada a fase `AJUSTE-OCR-01` com documentação da correção cirúrgica do parser.
+- Implementada a fase `AJUSTE-OCR-02` com documentação da melhoria do parser para layouts variados.
 - Implementada a fase `RESET-BANCO-TESTE-01` com script seguro de limpeza do banco de teste, backup obrigatório e dry-run como padrão.
 - Implementada a fase `OPS-OCR-01` com limpeza segura do ambiente de testes e backup em `_backup_testes/`.
 - Implementada a fase `API-IN-01` com API local autenticada para entrada controlada de documentos em `input/`.
