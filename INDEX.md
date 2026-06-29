@@ -230,6 +230,9 @@
 **Menu operacional Windows (INSTALADOR-WINDOWS-OCR-01A)**
 → Disponível em `OCR-LEITOR.cmd` na raiz do projeto
 
+**Hardening inicial de login e sessão (SEGURANCA-OCR-01A)**
+→ Removido fallback inseguro da secret key; adicionado timeout de sessão, cookie hardening e rate limit no login. Sem alteração no fluxo OCR/Monday. CSRF ficará para fase seguinte.
+
 **Desenvolver o projeto**
 → [copilot-instructions.md](copilot-instructions.md)
 

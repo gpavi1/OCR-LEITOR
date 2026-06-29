@@ -7,6 +7,9 @@ import csv
 import sys
 import uuid
 import datetime
+import time
+import secrets
+from datetime import timedelta
 from io import StringIO
 from decimal import Decimal, InvalidOperation
 
@@ -24,7 +27,59 @@ from conectores.monday_envio import enviar_documento_monday
 
 
 app = Flask(__name__)
-app.secret_key = os.getenv("WEB_SECRET_KEY", "ocr-leitor-local-dev")
+
+
+def _carregar_web_secret_key():
+    valor = os.getenv("WEB_SECRET_KEY", "").strip()
+    if valor:
+        return valor
+    return secrets.token_hex(32)
+
+
+app.secret_key = _carregar_web_secret_key()
+
+app.permanent_session_lifetime = timedelta(minutes=30)
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SECURE"] = os.getenv("WEB_SESSION_COOKIE_SECURE", "").strip().lower() in ("1", "true", "sim", "yes")
+
+
+_LOGIN_RATE_LIMIT = {}
+
+
+def _obter_max_tentativas():
+    return int(os.getenv("WEB_LOGIN_MAX_TENTATIVAS", "3"))
+
+
+def _obter_bloqueio_segundos():
+    return int(os.getenv("WEB_LOGIN_BLOQUEIO_SEGUNDOS", "30"))
+
+
+def _verificar_rate_limit_login(ip, username):
+    chave = (ip, username)
+    if chave not in _LOGIN_RATE_LIMIT:
+        return True
+    tentativas, inicio = _LOGIN_RATE_LIMIT[chave]
+    if tentativas >= _obter_max_tentativas():
+        if time.time() - inicio < _obter_bloqueio_segundos():
+            return False
+        _LOGIN_RATE_LIMIT.pop(chave, None)
+    return True
+
+
+def _registrar_tentativa_login(ip, username):
+    chave = (ip, username)
+    agora = time.time()
+    if chave in _LOGIN_RATE_LIMIT:
+        tentativas, inicio = _LOGIN_RATE_LIMIT[chave]
+        _LOGIN_RATE_LIMIT[chave] = (tentativas + 1, inicio)
+    else:
+        _LOGIN_RATE_LIMIT[chave] = (1, agora)
+
+
+def _limpar_rate_limit_login(ip, username):
+    chave = (ip, username)
+    _LOGIN_RATE_LIMIT.pop(chave, None)
 
 EXTENSOES_PERMITIDAS_UPLOAD = {".jpg", ".jpeg", ".png", ".pdf"}
 EXTENSOES_PERMITIDAS_API_ENTRADA = {".jpg", ".jpeg", ".png"}
@@ -247,17 +302,26 @@ def login():
         username = request.form.get("username", "")
         password = request.form.get("password", "")
 
-        expected_user, expected_password = _web_credentials()
+        ip = request.remote_addr or "127.0.0.1"
 
-        usuario_ok = hmac.compare_digest(username, expected_user)
-        senha_ok = hmac.compare_digest(password, expected_password)
+        if not _verificar_rate_limit_login(ip, username):
+            erro = "Muitas tentativas. Aguarde alguns segundos."
 
-        if usuario_ok and senha_ok:
-            session["autenticado"] = True
-            session["usuario"] = username
-            return redirect(url_for("index"))
+        else:
+            expected_user, expected_password = _web_credentials()
 
-        erro = "Usuário ou senha inválidos."
+            usuario_ok = hmac.compare_digest(username, expected_user)
+            senha_ok = hmac.compare_digest(password, expected_password)
+
+            if usuario_ok and senha_ok:
+                session.permanent = True
+                session["autenticado"] = True
+                session["usuario"] = username
+                _limpar_rate_limit_login(ip, username)
+                return redirect(url_for("index"))
+
+            _registrar_tentativa_login(ip, username)
+            erro = "Usuário ou senha inválidos."
 
     return render_template("login.html", erro=erro)
 
