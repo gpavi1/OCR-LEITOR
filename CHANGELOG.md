@@ -17,6 +17,8 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Documento de configuracao exemplar (`MONDAY_CONFIG_EXEMPLO.md`): lista todas as 8 variaveis de ambiente necessarias para envio real Monday, com placeholders ficticios e instrucoes de seguranca (nunca commit .env, nunca expor token/board_id).
 
+- Modelo seguro de configuracao para plataformas integradas (`CONFIG-INTEGRACAO-SEGURA-01`): documenta modelo de 4 camadas (contrato, dry-run, envio, rota); define separacao entre contrato interno, mapeamento externo, credenciais, execucao e historico; cria template replicavel para novas integracoes (`MODELO_PLATAFORMA_INTEGRADA.md`); cria checklist operacional e de seguranca (`CHECKLIST_NOVA_INTEGRACAO.md`); nao altera codigo, banco, parser, OCR pipeline, UI ou requirements.
+
 ### Corrigido
 
 - Interpretação do campo revisado vindo do MySQL como inteiro 1 (`FIX-MONDAY-REVISADO-01`): corrige `_bool_revisado` em `conectores/monday_payload.py` para aceitar int 1, str "1", "true", "sim", "s", "yes" e variantes maiúsculas/minúsculas; mantém bloqueio para 0, "0", "false", "nao", "não", None, vazio, espaços; valida contrato, dry-run e envio controlado com valores booleanos e inteiros; não altera banco, parser, OCR pipeline, UI ou requirements.

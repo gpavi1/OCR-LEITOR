@@ -215,6 +215,15 @@
 **Configuração segura das variáveis de ambiente do Monday**
 → [docs/integracao/MONDAY_CONFIG_EXEMPLO.md](docs/integracao/MONDAY_CONFIG_EXEMPLO.md)
 
+**Modelo seguro de configuração para plataformas integradas (CONFIG-INTEGRACAO-SEGURA-01)**
+→ [docs/integracao/CONFIG-INTEGRACAO-SEGURA-01.md](docs/integracao/CONFIG-INTEGRACAO-SEGURA-01.md)
+
+**Template para criar nova integração no OCR-LEITOR**
+→ [docs/integracao/MODELO_PLATAFORMA_INTEGRADA.md](docs/integracao/MODELO_PLATAFORMA_INTEGRADA.md)
+
+**Checklist de segurança para liberar nova plataforma externa**
+→ [docs/integracao/CHECKLIST_NOVA_INTEGRACAO.md](docs/integracao/CHECKLIST_NOVA_INTEGRACAO.md)
+
 **Desenvolver o projeto**
 → [copilot-instructions.md](copilot-instructions.md)
 
