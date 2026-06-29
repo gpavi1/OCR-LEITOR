@@ -185,6 +185,15 @@
 **Melhorar parser para layouts variados (AJUSTE-OCR-02)**
 → [docs/diagnostico/AJUSTE-OCR-02_LAYOUTS_VARIADOS.md](docs/diagnostico/AJUSTE-OCR-02_LAYOUTS_VARIADOS.md)
 
+**Guia operacional para piloto na empresa (GUIA-PILOTO-EMPRESA-01)**
+→ [docs/operacao/GUIA_PILOTO_EMPRESA_01.md](docs/operacao/GUIA_PILOTO_EMPRESA_01.md)
+
+**Checklist de revisão de documento**
+→ [docs/operacao/CHECKLIST_REVISAO_DOCUMENTO.md](docs/operacao/CHECKLIST_REVISAO_DOCUMENTO.md)
+
+**Modelo CSV para controle do piloto**
+→ [docs/operacao/MODELO_CONTROLE_PILOTO_EMPRESA.csv](docs/operacao/MODELO_CONTROLE_PILOTO_EMPRESA.csv)
+
 **Desenvolver o projeto**
 → [copilot-instructions.md](copilot-instructions.md)
 
