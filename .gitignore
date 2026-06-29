@@ -105,3 +105,6 @@ exports/
 _amostras_privadas/
 relatorios_ocr/
 diagnosticos_ocr/
+
+# Backups de banco de teste
+_backup_banco_teste/

@@ -15,6 +15,7 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Implementada a fase `DIAG-OCR-01` com auditoria local da extração OCR/parser e relatórios privados.
 - Implementada a fase `AJUSTE-OCR-01` com documentação da correção cirúrgica do parser.
+- Implementada a fase `RESET-BANCO-TESTE-01` com script seguro de limpeza do banco de teste, backup obrigatório e dry-run como padrão.
 - Implementada a fase `OPS-OCR-01` com limpeza segura do ambiente de testes e backup em `_backup_testes/`.
 - Implementada a fase `API-IN-01` com API local autenticada para entrada controlada de documentos em `input/`.
 - Implementada a fase `MARKDOWN-OCR-01` com geração local e manual do relatório Markdown humano em `exports/markdown/`.

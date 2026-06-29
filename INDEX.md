@@ -85,6 +85,7 @@
 - **[docs/exportacao/EXPORT-OCR-01_JSON_VALIDADO.md](docs/exportacao/EXPORT-OCR-01_JSON_VALIDADO.md)** - Exportação local do JSON validado revisado
 - **[docs/exportacao/MARKDOWN-OCR-01_RELATORIO_HUMANO.md](docs/exportacao/MARKDOWN-OCR-01_RELATORIO_HUMANO.md)** - Relatório Markdown humano derivado do JSON validado
 - **[docs/operacao/OPS-OCR-01_LIMPEZA_AMBIENTE_TESTE.md](docs/operacao/OPS-OCR-01_LIMPEZA_AMBIENTE_TESTE.md)** - Limpeza segura do ambiente de testes
+- **[docs/operacao/RESET-BANCO-TESTE-01_LIMPEZA_BANCO_TESTE.md](docs/operacao/RESET-BANCO-TESTE-01_LIMPEZA_BANCO_TESTE.md)** - Limpeza segura dos registros de teste do banco MySQL
 - **[docs/diagnostico/DIAG-OCR-01_AUDITORIA_EXTRACAO.md](docs/diagnostico/DIAG-OCR-01_AUDITORIA_EXTRACAO.md)** - Auditoria assistida da extração OCR/parser
 - **[docs/diagnostico/AJUSTE-OCR-01_CORRECAO_PARSER.md](docs/diagnostico/AJUSTE-OCR-01_CORRECAO_PARSER.md)** - Correção cirúrgica do parser NF-e
 
@@ -171,6 +172,9 @@
 
 **Limpar o ambiente de testes com backup**
 → [docs/operacao/OPS-OCR-01_LIMPEZA_AMBIENTE_TESTE.md](docs/operacao/OPS-OCR-01_LIMPEZA_AMBIENTE_TESTE.md)
+
+**Limpar registros de teste do banco MySQL**
+→ [docs/operacao/RESET-BANCO-TESTE-01_LIMPEZA_BANCO_TESTE.md](docs/operacao/RESET-BANCO-TESTE-01_LIMPEZA_BANCO_TESTE.md)
 
 **Auditar extração OCR/parser com amostras privadas**
 → [docs/diagnostico/DIAG-OCR-01_AUDITORIA_EXTRACAO.md](docs/diagnostico/DIAG-OCR-01_AUDITORIA_EXTRACAO.md)
