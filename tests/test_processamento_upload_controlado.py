@@ -122,7 +122,8 @@ def test_rota_processar_post_retorna_redirect():
     with app.test_client() as client:
         with client.session_transaction() as sess:
             sess["autenticado"] = True
-        resp = client.post("/upload/processar")
+            sess["csrf_token"] = "ct"
+        resp = client.post("/upload/processar", data={"csrf_token": "ct"})
         assert resp.status_code == 302
 
 

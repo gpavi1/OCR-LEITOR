@@ -140,6 +140,7 @@
         <p class="review-status-note">Campos vazios aparecem em destaque. Corrija antes de aprovar.</p>
 
         <form method="post" action="/documentos/{{ documento.id }}/editar" class="edit-form review-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="form-grid review-form-grid">
                 <div class="form-field review-input {% if campo_pendente(documento.empresa) %}is-empty{% endif %}">
                     <label for="empresa">Empresa</label>
@@ -199,14 +200,17 @@
                 <p class="review-status-note">A exportação JSON validada é manual e salva somente em <code>exports/json/</code>.</p>
 
                 <form method="post" action="/documentos/{{ documento.id }}/exportar-json" class="review-actions">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button class="btn" type="submit">Exportar JSON validado</button>
                 </form>
 
                 {% if documento.status == 'pendente_integracao' %}
                 <form method="post" action="/integracoes/documentos/{{ documento.id }}/monday-dryrun" class="review-actions">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button class="btn secondary" type="submit">Simular Monday</button>
                 </form>
                 <form method="post" action="/integracoes/documentos/{{ documento.id }}/enviar-monday" class="review-actions" onsubmit="return confirm('Confirmar envio REAL para Monday?');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="confirmar" value="sim">
                     <button class="btn" type="submit">Enviar para Monday</button>
                 </form>
@@ -215,6 +219,7 @@
                 <p class="review-status-note">O relatório Markdown é apenas leitura humana e fica salvo em <code>exports/markdown/</code>.</p>
 
                 <form method="post" action="/documentos/{{ documento.id }}/gerar-markdown" class="review-actions">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button class="btn secondary" type="submit">Gerar relatório Markdown</button>
                 </form>
             {% else %}
@@ -222,6 +227,7 @@
             {% endif %}
 
             <form method="post" action="/documentos/{{ documento.id }}/desfazer-revisao" class="review-actions">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button class="btn secondary" type="submit">Desfazer revisão</button>
             </form>
         {% else %}
@@ -232,6 +238,7 @@
             {% endif %}
 
             <form method="post" action="/documentos/{{ documento.id }}/revisar" class="review-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <label for="observacao_revisao_aprovacao">Observação da revisão</label>
                 <textarea id="observacao_revisao_aprovacao" name="observacao_revisao" rows="3" placeholder="Ex.: dados conferidos com a nota original"></textarea>
 

@@ -81,6 +81,33 @@ def _limpar_rate_limit_login(ip, username):
     chave = (ip, username)
     _LOGIN_RATE_LIMIT.pop(chave, None)
 
+
+def _obter_csrf_token():
+    if "csrf_token" not in session:
+        session["csrf_token"] = secrets.token_urlsafe(32)
+    return session["csrf_token"]
+
+
+def _csrf_exempt_endpoint(endpoint):
+    return endpoint in ("api_entrada_documentos",)
+
+
+_CSRF_EXEMPT_ENDPOINTS = {"api_entrada_documentos"}
+
+
+@app.before_request
+def proteger_post_com_csrf():
+    if request.method != "POST":
+        return None
+    if request.endpoint in _CSRF_EXEMPT_ENDPOINTS:
+        return None
+    token_sessao = session.get("csrf_token", "")
+    token_form = request.form.get("csrf_token", "")
+    if not token_sessao or not token_form or not hmac.compare_digest(token_sessao, token_form):
+        abort(400)
+    return None
+
+
 EXTENSOES_PERMITIDAS_UPLOAD = {".jpg", ".jpeg", ".png", ".pdf"}
 EXTENSOES_PERMITIDAS_API_ENTRADA = {".jpg", ".jpeg", ".png"}
 TAMANHO_MAXIMO_UPLOAD = 10 * 1024 * 1024
@@ -121,6 +148,7 @@ def inject_globals():
         status_label=status_label,
         precisa_revisao=STATUS_PRECISA_REVISAO,
         campo_pendente=campo_pendente,
+        csrf_token=_obter_csrf_token,
     )
 
 

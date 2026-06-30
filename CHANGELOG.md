@@ -9,6 +9,8 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Adicionado
 
+- Proteção CSRF nos formulários POST do painel web (`SEGURANCA-OCR-01B`): adiciona proteção CSRF manual sem dependências; injeta token CSRF nos templates com formulários; mantém API de entrada automatizada isenta para não quebrar integrações por Bearer; adiciona testes de proteção CSRF; não altera conectores, banco, parser, OCR pipeline, scripts ou envio Monday real.
+
 - Hardening inicial de login e sessão (`SEGURANCA-OCR-01A`): remove fallback fixo inseguro da secret key do painel web; adiciona timeout de sessão; reforça configurações de cookie de sessão; adiciona rate limit simples no login; adiciona testes de autenticação e hardening inicial; não altera conectores, banco, parser, OCR pipeline ou envio Monday.
 
 - Menu CMD central de operacao local Windows (`INSTALADOR-WINDOWS-OCR-01A`): `OCR-LEITOR.cmd` como ponto unico de entrada; `scripts/menu_operacao.py` com 16 opcoes (ambiente, venv, requirements, Tesseract, MySQL, pastas, web, OCR 24h, health, config integracoes, testes, limpeza segura, release); validadores seguros de Tesseract (`scripts/validador_tesseract.py`) e MySQL (`scripts/validador_mysql.py`); acoes destrutivas protegidas por confirmacao textual; nao altera conectores, banco, parser, OCR pipeline, envio Monday real ou requirements.

@@ -270,7 +270,8 @@ def test_rota_markdown_post_retorna_redirect_e_registra_tentativa(tmp_path, monk
     with app.test_client() as client:
         with client.session_transaction() as sess:
             sess["autenticado"] = True
-        resp = client.post("/documentos/9/gerar-markdown")
+            sess["csrf_token"] = "ct"
+        resp = client.post("/documentos/9/gerar-markdown", data={"csrf_token": "ct"})
 
     assert resp.status_code == 302
     assert tentativas and tentativas[0]["status"] == "sucesso"

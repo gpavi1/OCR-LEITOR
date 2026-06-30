@@ -11,6 +11,7 @@
 
 <section class="upload-card">
     <form class="upload-form" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="upload-dropzone">
             <label class="upload-label" for="documento">Selecione o arquivo</label>
             <input type="file" id="documento" name="documento"
@@ -26,6 +27,7 @@
     <h2 class="proc-title">Processamento controlado</h2>
     <p class="proc-desc">Upload e processamento s&atilde;o etapas separadas. Envie os arquivos acima e depois clique no bot&atilde;o abaixo para iniciar o OCR nos documentos enviados.</p>
     <form class="proc-form" method="post" action="/upload/processar">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button class="btn proc-btn" type="submit">Processar arquivos enviados</button>
     </form>
 </section>

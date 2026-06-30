@@ -89,14 +89,27 @@ def test_login_credenciais_corretas_autentica(monkeypatch):
     monkeypatch.setenv("WEB_USERNAME", USERNAME)
     monkeypatch.setenv("WEB_PASSWORD", PASSWORD)
     monkeypatch.setenv("WEB_SECRET_KEY", SECRET_KEY)
+    from web.app import _LOGIN_RATE_LIMIT
+    _LOGIN_RATE_LIMIT.clear()
     with app.test_client() as client:
+        resp_get = client.get("/login")
+        ct = _extrair_csrf_form(resp_get.data)
         resp_login = client.post("/login", data={
+            "csrf_token": ct,
             "username": USERNAME,
             "password": PASSWORD,
         })
         assert resp_login.status_code == 302
         resp_index = client.get("/")
     assert resp_index.status_code == 200
+
+
+def _extrair_csrf_form(html):
+    import re, html as html_mod
+    match = re.search(rb'name="csrf_token"\s+value="([^"]+)"', html)
+    if match:
+        return html_mod.unescape(match.group(1).decode("utf-8"))
+    return ""
 
 
 def test_logout_limpa_sessao(monkeypatch):
@@ -118,8 +131,13 @@ def test_login_invalido_nao_autentica(monkeypatch):
     monkeypatch.setenv("WEB_USERNAME", USERNAME)
     monkeypatch.setenv("WEB_PASSWORD", PASSWORD)
     monkeypatch.setenv("WEB_SECRET_KEY", SECRET_KEY)
+    from web.app import _LOGIN_RATE_LIMIT
+    _LOGIN_RATE_LIMIT.clear()
     with app.test_client() as client:
+        resp_get = client.get("/login")
+        ct = _extrair_csrf_form(resp_get.data)
         resp = client.post("/login", data={
+            "csrf_token": ct,
             "username": USERNAME,
             "password": "senha_errada",
         })
@@ -139,15 +157,20 @@ def test_muitas_tentativas_invalidas_ativam_bloqueio(monkeypatch):
     _LOGIN_RATE_LIMIT.clear()
 
     with app.test_client() as client:
+        resp_get = client.get("/login")
+        ct = _extrair_csrf_form(resp_get.data)
         for _ in range(3):
             client.post("/login", data={
+                "csrf_token": ct,
                 "username": "invalido",
                 "password": "invalido",
             })
         resp = client.post("/login", data={
+            "csrf_token": ct,
             "username": "invalido",
             "password": "invalido",
         })
+    assert resp.status_code == 200
     assert b"Muitas tentativas" in resp.data or "Muitas tentativas" in resp.get_data(as_text=True)
 
 # ============================================================

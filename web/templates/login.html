@@ -3,6 +3,7 @@
 {% block content %}
 <div class="login-wrap">
     <form method="post" class="login-card">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="brand login-brand">
             <div class="brand-mark">OCR</div>
             <div>

@@ -269,7 +269,8 @@ def test_rota_exportar_json_post_retorna_redirect_e_registra_tentativa(tmp_path,
     with app.test_client() as client:
         with client.session_transaction() as sess:
             sess["autenticado"] = True
-        resp = client.post("/documentos/7/exportar-json")
+            sess["csrf_token"] = "ct"
+        resp = client.post("/documentos/7/exportar-json", data={"csrf_token": "ct"})
 
     assert resp.status_code == 302
     assert tentativas and tentativas[0]["status"] == "sucesso"

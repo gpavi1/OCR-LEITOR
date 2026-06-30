@@ -84,6 +84,7 @@
                         {% if tentativa.documento_id %}
                             {% if tentativa.status_atual not in ('pendente_integracao', 'integrado') %}
                             <form class="inline-form" method="post" action="/integracoes/documentos/{{ tentativa.documento_id }}/reenfileirar" onsubmit="return confirm('Reenfileirar este documento para integração?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button class="btn secondary compact-btn" type="submit">reenfileirar</button>
                             </form>
                             {% elif tentativa.status_atual == 'integrado' %}

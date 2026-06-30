@@ -233,6 +233,9 @@
 **Hardening inicial de login e sessão (SEGURANCA-OCR-01A)**
 → Removido fallback inseguro da secret key; adicionado timeout de sessão, cookie hardening e rate limit no login. Sem alteração no fluxo OCR/Monday. CSRF ficará para fase seguinte.
 
+**Proteção CSRF nos formulários POST (SEGURANCA-OCR-01B)**
+→ Proteção CSRF manual nos formulários POST do painel web, sem dependências externas. Preserva API de entrada e fluxo OCR/Monday.
+
 **Desenvolver o projeto**
 → [copilot-instructions.md](copilot-instructions.md)
 

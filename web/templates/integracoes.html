@@ -80,9 +80,11 @@
                             <a class="btn secondary" href="/exportar/documentos/{{ doc.id }}.csv">CSV</a>
                             {% if doc.revisado %}
                             <form method="post" action="/integracoes/documentos/{{ doc.id }}/monday-dryrun" class="inline-form">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button class="btn secondary compact-btn" type="submit">Simular Monday</button>
                             </form>
                             <form method="post" action="/integracoes/documentos/{{ doc.id }}/enviar-monday" class="inline-form" onsubmit="return confirm('Confirmar envio REAL para Monday?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="confirmar" value="sim">
                                 <button class="btn compact-btn" type="submit">Enviar para Monday</button>
                             </form>
@@ -92,10 +94,12 @@
                         </div>
 
                         <form method="post" action="/integracoes/documentos/{{ doc.id }}/marcar-integrado" onsubmit="return confirm('Confirmar que este documento foi integrado?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button class="btn" type="submit">marcar integrado</button>
                         </form>
 
                         <form class="integration-failure" method="post" action="/integracoes/documentos/{{ doc.id }}/registrar-falha" onsubmit="return confirm('Confirmar o registro de falha deste documento?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <input type="text" name="erro" placeholder="motivo da falha" required>
                             <button class="btn secondary" type="submit">registrar falha</button>
                         </form>
