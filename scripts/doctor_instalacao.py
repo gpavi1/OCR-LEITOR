@@ -3,6 +3,11 @@ import shutil
 import sys
 from pathlib import Path
 
+try:
+    from scripts.caminhos_instalacao import classificar_caminho_instalacao
+except ModuleNotFoundError:
+    from caminhos_instalacao import classificar_caminho_instalacao
+
 
 STATUS_OK = "OK"
 STATUS_AVISO = "AVISO"
@@ -70,11 +75,20 @@ def _verificar_tesseract_path():
     return resultado("Tesseract no PATH", STATUS_AVISO, "comando tesseract nao encontrado no PATH")
 
 
+def _verificar_caminho_instalacao(base_dir):
+    classificacao = classificar_caminho_instalacao(base_dir, modo="desenvolvimento")
+    detalhes = classificacao["avisos"] + classificacao["bloqueios"]
+    detalhes.append("Para cliente, use C:\\OCR-LEITOR. Para demo, use C:\\OCR-LEITOR-DEMO.")
+    status = STATUS_AVISO if classificacao["avisos"] or classificacao["bloqueios"] else STATUS_OK
+    return resultado("Caminho de instalacao", status, " ".join(detalhes))
+
+
 def coletar_diagnostico(base_dir):
     base = Path(base_dir)
     resultados = [
         _verificar_python(),
         _verificar_venv(),
+        _verificar_caminho_instalacao(base),
         verificar_arquivo(base / "requirements.txt"),
         verificar_arquivo(base / "requirements.add.txt"),
         verificar_arquivo(base / ".env.example"),
