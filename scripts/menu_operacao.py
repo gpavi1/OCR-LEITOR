@@ -264,6 +264,17 @@ def opcao_validar_backup_restore_dry_run():
     executar_comando(f'"{py}" "{script}" --backup "{backup}" --dry-run --restaurar-arquivos')
 
 
+def opcao_instalador_compacto():
+    py = python_do_projeto()
+    script = str(BASE_DIR / "scripts" / "instalar_ocr.py")
+    if not Path(script).is_file():
+        print("Script instalar_ocr.py nao encontrado.")
+        return
+    print("Instalador compacto: modos demo, cliente, update e verificar.")
+    print("Rodando modo verificar sem alterar arquivos.")
+    executar_comando(f'"{py}" "{script}" verificar')
+
+
 OPCOES = [
     ("1", "Verificar ambiente", opcao_verificar_ambiente),
     ("2", "Criar .venv", opcao_criar_venv),
@@ -283,7 +294,8 @@ OPCOES = [
     ("16", "Gerar release limpa", opcao_gerar_release),
     ("17", "Gerar backup operacional", opcao_gerar_backup_operacional),
     ("18", "Validar backup / restore dry-run", opcao_validar_backup_restore_dry_run),
-    ("19", "Sair", None),
+    ("19", "Instalador compacto / modos demo, cliente e update", opcao_instalador_compacto),
+    ("20", "Sair", None),
 ]
 
 

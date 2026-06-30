@@ -88,6 +88,7 @@
 - **[docs/operacao/RESET-BANCO-TESTE-01_LIMPEZA_BANCO_TESTE.md](docs/operacao/RESET-BANCO-TESTE-01_LIMPEZA_BANCO_TESTE.md)** - Limpeza segura dos registros de teste do banco MySQL
 - **[docs/operacao/CAMINHOS_INSTALACAO_OCR.md](docs/operacao/CAMINHOS_INSTALACAO_OCR.md)** - `CAMINHOS-SEGUROS-INSTALADOR-OCR-01` -> regras de caminhos seguros, modo demo, modo cliente, modo update e validacao nao destrutiva no doctor.
 - **[docs/operacao/BACKUP_RESTORE_OCR.md](docs/operacao/BACKUP_RESTORE_OCR.md)** - `BACKUP-RESTORE-OCR-01` -> backup operacional, restore dry-run, restore real com confirmacao e base para update seguro.
+- **[docs/operacao/INSTALADOR_COMPACTO_OCR.md](docs/operacao/INSTALADOR_COMPACTO_OCR.md)** - `INSTALADOR-COMPACTO-OCR-01` -> instalador compacto com modos demo, cliente, update e verificar.
 - **[docs/diagnostico/DIAG-OCR-01_AUDITORIA_EXTRACAO.md](docs/diagnostico/DIAG-OCR-01_AUDITORIA_EXTRACAO.md)** - Auditoria assistida da extração OCR/parser
 - **[docs/diagnostico/AJUSTE-OCR-01_CORRECAO_PARSER.md](docs/diagnostico/AJUSTE-OCR-01_CORRECAO_PARSER.md)** - Correção cirúrgica do parser NF-e
 

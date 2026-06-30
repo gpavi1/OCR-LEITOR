@@ -17,6 +17,25 @@
 
 ═══════════════════════════════════════════════════════════════════════════
 
+🧭 ENTRADAS PRINCIPAIS:
+
+  Para operar diariamente:
+     OCR-LEITOR.cmd
+
+  Para instalar, configurar, validar ou preparar update:
+     INSTALAR-OCR-LEITOR.cmd
+
+  Caminho recomendado cliente:
+     C:\OCR-LEITOR
+
+  Caminho recomendado demo:
+     C:\OCR-LEITOR-DEMO
+
+  Antes de update:
+     backup operacional é obrigatório.
+
+═══════════════════════════════════════════════════════════════════════════
+
 ⚡ INÍCIO RÁPIDO (5 minutos):
 
   1. Instalar Tesseract OCR:
