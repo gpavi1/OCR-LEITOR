@@ -239,6 +239,31 @@ def opcao_gerar_release():
     executar_comando(f'"{py}" "{script}" --confirmar')
 
 
+def opcao_gerar_backup_operacional():
+    py = python_do_projeto()
+    script = str(BASE_DIR / "scripts" / "backup_ocr.py")
+    if not Path(script).is_file():
+        print("Script backup_ocr.py nao encontrado.")
+        return
+    print("Gerando backup operacional em backups/...")
+    executar_comando(f'"{py}" "{script}" --confirmar --incluir-env-mascarado')
+
+
+def opcao_validar_backup_restore_dry_run():
+    py = python_do_projeto()
+    script = str(BASE_DIR / "scripts" / "restore_ocr.py")
+    if not Path(script).is_file():
+        print("Script restore_ocr.py nao encontrado.")
+        return
+    print("Informe o caminho do ZIP de backup para validar em dry-run.")
+    print("Nenhum arquivo sera restaurado por esta opcao.")
+    backup = input("> ").strip().strip('"')
+    if not backup:
+        print("Cancelado.")
+        return
+    executar_comando(f'"{py}" "{script}" --backup "{backup}" --dry-run --restaurar-arquivos')
+
+
 OPCOES = [
     ("1", "Verificar ambiente", opcao_verificar_ambiente),
     ("2", "Criar .venv", opcao_criar_venv),
@@ -256,7 +281,9 @@ OPCOES = [
     ("14", "Limpar ambiente de teste", opcao_limpar_ambiente),
     ("15", "Reset banco de teste", opcao_reset_banco),
     ("16", "Gerar release limpa", opcao_gerar_release),
-    ("17", "Sair", None),
+    ("17", "Gerar backup operacional", opcao_gerar_backup_operacional),
+    ("18", "Validar backup / restore dry-run", opcao_validar_backup_restore_dry_run),
+    ("19", "Sair", None),
 ]
 
 

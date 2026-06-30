@@ -9,6 +9,8 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Adicionado
 
+- Backup e restore operacional (`BACKUP-RESTORE-OCR-01`): adiciona backup operacional em ZIP com manifest; inclui pastas operacionais, schema e diagnostico; permite `.env` apenas mascarado; adiciona restore dry-run e restore real com confirmacao textual; prepara update seguro para o instalador compacto; adiciona opcoes seguras ao menu operacional; nao altera banco, parser, OCR pipeline, conectores ou painel web.
+
 - Caminhos seguros para futuro instalador (`CAMINHOS-SEGUROS-INSTALADOR-OCR-01`): adiciona modulo de classificacao de caminhos seguros de instalacao; define caminhos recomendados para cliente e demo; documenta regras para DEMO, CLIENTE e UPDATE; adiciona alertas no doctor para caminhos inseguros; prepara base para instalador compacto sem criar instalador ainda; nao altera banco, parser, OCR pipeline, conectores ou scripts destrutivos.
 
 - Configurador seguro de ambiente (`CONFIGURADOR-PLATAFORMA-SEGURO-OCR-01`): adiciona assistente CLI seguro para configurar `.env`; configura Monday, Web e MySQL; cria backup do `.env` antes de alteracao; mascara tokens e senhas no resumo; gera WEB_SECRET_KEY quando ausente; atualiza `.env.example` para variaveis reais atuais; adiciona opcao ao menu operacional; nao altera banco, parser, OCR pipeline, conectores ou painel web.
