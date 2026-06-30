@@ -236,6 +236,9 @@
 **Proteção CSRF nos formulários POST (SEGURANCA-OCR-01B)**
 → Proteção CSRF manual nos formulários POST do painel web, sem dependências externas. Preserva API de entrada e fluxo OCR/Monday.
 
+**Acabamento visual para uso real (FECHAMENTO-USO-REAL-OCR-01A)**
+→ Labels amigáveis de status; tags coloridas sutis; correção de status técnico cru; diferenciação visual Simular vs Enviar Monday; guia de integração OCR + Monday.
+
 **Desenvolver o projeto**
 → [copilot-instructions.md](copilot-instructions.md)
 

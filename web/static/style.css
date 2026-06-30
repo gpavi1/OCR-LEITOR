@@ -1074,6 +1074,68 @@ pre {
     }
 }
 
+/* FECHAMENTO-USO-REAL-OCR-01A — classes de status faltantes */
+.status-recebido {
+    border-color: rgba(148, 163, 184, 0.35);
+    color: #94a3b8;
+    background: rgba(148, 163, 184, 0.06);
+}
+.status-processando {
+    border-color: rgba(56, 189, 248, 0.35);
+    color: #7dd3fc;
+    background: rgba(56, 189, 248, 0.06);
+}
+.status-integrado {
+    border-color: rgba(34, 197, 94, 0.35);
+    color: #86efac;
+    background: rgba(34, 197, 94, 0.06);
+}
+.status-falha_integracao {
+    border-color: rgba(239, 68, 68, 0.35);
+    color: #fca5a5;
+    background: rgba(239, 68, 68, 0.06);
+}
+.status-dry_run_apto {
+    border-color: rgba(56, 189, 248, 0.35);
+    color: #7dd3fc;
+    background: rgba(56, 189, 248, 0.06);
+}
+.status-dry_run_bloqueado {
+    border-color: rgba(251, 191, 36, 0.35);
+    color: #fde68a;
+    background: rgba(251, 191, 36, 0.06);
+}
+.status-dry_run_erro {
+    border-color: rgba(239, 68, 68, 0.35);
+    color: #fca5a5;
+    background: rgba(239, 68, 68, 0.06);
+}
+.status-monday_envio_sucesso {
+    border-color: rgba(34, 197, 94, 0.35);
+    color: #86efac;
+    background: rgba(34, 197, 94, 0.06);
+}
+.status-monday_envio_falha {
+    border-color: rgba(239, 68, 68, 0.35);
+    color: #fca5a5;
+    background: rgba(239, 68, 68, 0.06);
+}
+.status-monday_envio_bloqueado {
+    border-color: rgba(251, 191, 36, 0.35);
+    color: #fde68a;
+    background: rgba(251, 191, 36, 0.06);
+}
+
+.btn-simular-monday {
+    border-color: rgba(148, 163, 184, 0.35) !important;
+    color: #cbd5e1 !important;
+}
+.btn-enviar-monday {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.95), rgba(56, 189, 248, 0.95)) !important;
+    color: #04100a !important;
+    font-weight: 800 !important;
+}
+
 /* UI-OCR-03 — Tema dark base */
 :root {
     --ocr-bg: #070b14;

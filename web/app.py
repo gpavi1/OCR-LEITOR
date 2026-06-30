@@ -115,17 +115,17 @@ TAMANHO_MAXIMO_UPLOAD = 10 * 1024 * 1024
 STATUS_LABEL = {
     "recebido": "Recebido",
     "processando": "Processando",
-    "pendente_revisao": "Precisa revisão",
-    "pendente_integracao": "Aguardando integração",
+    "pendente_revisao": "Pendente revisão",
+    "pendente_integracao": "Pendente integração",
     "integrado": "Integrado",
     "falha_integracao": "Falha na integração",
-    "dry_run_apto": "Monday Dry-run: apto",
-    "dry_run_bloqueado": "Monday Dry-run: bloqueado",
-    "dry_run_erro": "Monday Dry-run: erro",
-    "monday_envio_sucesso": "Monday Envio Real: sucesso",
-    "monday_envio_falha": "Monday Envio Real: falha",
-    "monday_envio_bloqueado": "Monday Envio Real: bloqueado",
-    "erro_ocr": "Erro OCR — revisar",
+    "dry_run_apto": "Simulação apta",
+    "dry_run_bloqueado": "Simulação bloqueada",
+    "dry_run_erro": "Simulação com erro",
+    "monday_envio_sucesso": "Enviado ao Monday",
+    "monday_envio_falha": "Falha no Monday",
+    "monday_envio_bloqueado": "Envio bloqueado",
+    "erro_ocr": "Erro na leitura",
 }
 
 STATUS_PRECISA_REVISAO = {"pendente_revisao", "erro_ocr"}

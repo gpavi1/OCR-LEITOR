@@ -40,8 +40,8 @@
                                 <div class="history-company">{{ tentativa.empresa or "-" }}</div>
                             </div>
 
-                            <span class="badge badge-{{ tentativa.status }}">
-                                {{ tentativa.status }}
+                            <span class="badge status-{{ tentativa.status }}">
+                                {{ status_label(tentativa.status) }}
                             </span>
                         </div>
 

@@ -124,14 +124,14 @@ def test_documentos_mantem_link_abrir():
 
 
 def test_status_label_parcial():
-    assert status_label("pendente_revisao") == "Precisa revisão"
+    assert status_label("pendente_revisao") == "Pendente revisão"
 
 
 def test_status_label_erro_ocr():
-    assert status_label("erro_ocr") == "Erro OCR — revisar"
+    assert status_label("erro_ocr") == "Erro na leitura"
 
 
 def test_status_label_pendente_revisao():
-    assert status_label("pendente_revisao") == "Precisa revisão"
+    assert status_label("pendente_revisao") == "Pendente revisão"
     assert "pendente_revisao" in STATUS_PRECISA_REVISAO
     assert "erro_ocr" in STATUS_PRECISA_REVISAO

@@ -85,9 +85,9 @@ class TestRotaConfig:
         conteudo = _ler_template()
         assert "Salvar" not in conteudo
 
-    def test_16_template_nao_contem_enviar(self):
+    def test_16_template_nao_contem_form_enviar(self):
         conteudo = _ler_template()
-        assert "Enviar" not in conteudo
+        assert "enviar-monday" not in conteudo
 
     def test_17_template_nao_contem_testar(self):
         conteudo = _ler_template()

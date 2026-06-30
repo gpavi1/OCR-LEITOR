@@ -12,6 +12,98 @@
     </div>
 </section>
 
+<section class="panel">
+    <div class="panel-title">
+        <h2>Como conectar o OCR-LEITOR ao Monday</h2>
+        <span>fluxo recomendado</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:10px;">
+        <div style="padding:12px;border-radius:8px;border:1px solid rgba(30,42,61,0.3);background:rgba(7,11,20,0.3);">
+            <strong style="color:#38bdf8;font-size:13px;">1. Configurar</strong>
+            <p style="color:#94a3b8;font-size:12px;margin:4px 0 0;">Defina as vari&aacute;veis de ambiente no <code>.env</code>.</p>
+        </div>
+        <div style="padding:12px;border-radius:8px;border:1px solid rgba(30,42,61,0.3);background:rgba(7,11,20,0.3);">
+            <strong style="color:#38bdf8;font-size:13px;">2. Reiniciar</strong>
+            <p style="color:#94a3b8;font-size:12px;margin:4px 0 0;">Reinicie o painel web para carregar as novas vari&aacute;veis.</p>
+        </div>
+        <div style="padding:12px;border-radius:8px;border:1px solid rgba(30,42,61,0.3);background:rgba(7,11,20,0.3);">
+            <strong style="color:#38bdf8;font-size:13px;">3. Conferir</strong>
+            <p style="color:#94a3b8;font-size:12px;margin:4px 0 0;">Confira nesta tela se as vari&aacute;veis aparecem como CONFIGURADO.</p>
+        </div>
+        <div style="padding:12px;border-radius:8px;border:1px solid rgba(30,42,61,0.3);background:rgba(7,11,20,0.3);">
+            <strong style="color:#38bdf8;font-size:13px;">4. Revisar</strong>
+            <p style="color:#94a3b8;font-size:12px;margin:4px 0 0;">Revise os campos extra&iacute;dos no detalhe do documento.</p>
+        </div>
+        <div style="padding:12px;border-radius:8px;border:1px solid rgba(30,42,61,0.3);background:rgba(7,11,20,0.3);">
+            <strong style="color:#38bdf8;font-size:13px;">5. Simular</strong>
+            <p style="color:#94a3b8;font-size:12px;margin:4px 0 0;">Use "Simular Monday" para validar antes do envio real.</p>
+        </div>
+        <div style="padding:12px;border-radius:8px;border:1px solid rgba(30,42,61,0.3);background:rgba(7,11,20,0.3);">
+            <strong style="color:#38bdf8;font-size:13px;">6. Conferir</strong>
+            <p style="color:#94a3b8;font-size:12px;margin:4px 0 0;">Confira o resultado da simula&ccedil;&atilde;o no hist&oacute;rico.</p>
+        </div>
+        <div style="padding:12px;border-radius:8px;border:1px solid rgba(30,42,61,0.3);background:rgba(7,11,20,0.3);">
+            <strong style="color:#22c55e;font-size:13px;">7. Enviar real</strong>
+            <p style="color:#94a3b8;font-size:12px;margin:4px 0 0;">Use "Enviar para Monday" somente ap&oacute;s simula&ccedil;&atilde;o bem-sucedida.</p>
+        </div>
+        <div style="padding:12px;border-radius:8px;border:1px solid rgba(30,42,61,0.3);background:rgba(7,11,20,0.3);">
+            <strong style="color:#38bdf8;font-size:13px;">8. Conferir</strong>
+            <p style="color:#94a3b8;font-size:12px;margin:4px 0 0;">Confira o item criado no board Monday e o hist&oacute;rico de integra&ccedil;&atilde;o.</p>
+        </div>
+    </div>
+
+    <div style="margin-top:16px;padding:12px;border-radius:8px;border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.06);">
+        <strong style="color:#fca5a5;font-size:12px;">&#9888; Seguran&ccedil;a:</strong>
+        <span style="color:#fca5a5;font-size:12px;">Nunca cole tokens no chat, no Git ou em documenta&ccedil;&atilde;o. Configure credenciais apenas no ambiente local seguro.</span>
+    </div>
+
+    <div style="margin-top:10px;padding:12px;border-radius:8px;border:1px solid rgba(56,189,248,0.2);background:rgba(7,11,20,0.3);">
+        <strong style="color:#7dd3fc;font-size:12px;">&#8505; Refer&ecirc;ncia:</strong>
+        <span style="color:#94a3b8;font-size:12px;">Guia completo em <code>docs/operacao/GUIA_INTEGRACAO_OCR_MONDAY.md</code></span>
+    </div>
+</section>
+
+<section class="panel">
+    <div class="panel-title">
+        <h2>Vari&aacute;veis do Monday</h2>
+        <span>detalhamento de cada configura&ccedil;&atilde;o</span>
+    </div>
+    <div style="display:grid;gap:8px;margin-top:10px;">
+        <div style="padding:10px 12px;border-radius:8px;border:1px solid rgba(30,42,61,0.25);background:rgba(7,11,20,0.25);display:grid;grid-template-columns:220px 1fr;gap:8px;align-items:start;">
+            <code style="color:#7dd3fc;font-size:12px;">MONDAY_API_TOKEN</code>
+            <span style="color:#94a3b8;font-size:12px;">Token da API Monday. Gerado em Administrador &rarr; API Tokens. Mantenha em segredo.</span>
+        </div>
+        <div style="padding:10px 12px;border-radius:8px;border:1px solid rgba(30,42,61,0.25);background:rgba(7,11,20,0.25);display:grid;grid-template-columns:220px 1fr;gap:8px;align-items:start;">
+            <code style="color:#7dd3fc;font-size:12px;">MONDAY_BOARD_ID</code>
+            <span style="color:#94a3b8;font-size:12px;">ID do quadro Monday. Extra&iacute;do da URL: <code>monday.com/boards/&lt;ID&gt;/...</code></span>
+        </div>
+        <div style="padding:10px 12px;border-radius:8px;border:1px solid rgba(30,42,61,0.25);background:rgba(7,11,20,0.25);display:grid;grid-template-columns:220px 1fr;gap:8px;align-items:start;">
+            <code style="color:#7dd3fc;font-size:12px;">MONDAY_COLUMN_EMPRESA</code>
+            <span style="color:#94a3b8;font-size:12px;">ID da coluna da empresa/fornecedor no board.</span>
+        </div>
+        <div style="padding:10px 12px;border-radius:8px;border:1px solid rgba(30,42,61,0.25);background:rgba(7,11,20,0.25);display:grid;grid-template-columns:220px 1fr;gap:8px;align-items:start;">
+            <code style="color:#7dd3fc;font-size:12px;">MONDAY_COLUMN_NUMERO_NF</code>
+            <span style="color:#94a3b8;font-size:12px;">ID da coluna do n&uacute;mero da nota fiscal.</span>
+        </div>
+        <div style="padding:10px 12px;border-radius:8px;border:1px solid rgba(30,42,61,0.25);background:rgba(7,11,20,0.25);display:grid;grid-template-columns:220px 1fr;gap:8px;align-items:start;">
+            <code style="color:#7dd3fc;font-size:12px;">MONDAY_COLUMN_CHAVE_ACESSO</code>
+            <span style="color:#94a3b8;font-size:12px;">ID da coluna da chave de acesso (44 d&iacute;gitos).</span>
+        </div>
+        <div style="padding:10px 12px;border-radius:8px;border:1px solid rgba(30,42,61,0.25);background:rgba(7,11,20,0.25);display:grid;grid-template-columns:220px 1fr;gap:8px;align-items:start;">
+            <code style="color:#7dd3fc;font-size:12px;">MONDAY_COLUMN_VENCIMENTO</code>
+            <span style="color:#94a3b8;font-size:12px;">ID da coluna da data de vencimento.</span>
+        </div>
+        <div style="padding:10px 12px;border-radius:8px;border:1px solid rgba(30,42,61,0.25);background:rgba(7,11,20,0.25);display:grid;grid-template-columns:220px 1fr;gap:8px;align-items:start;">
+            <code style="color:#7dd3fc;font-size:12px;">MONDAY_COLUMN_VALOR_TOTAL</code>
+            <span style="color:#94a3b8;font-size:12px;">ID da coluna do valor total da nota.</span>
+        </div>
+        <div style="padding:10px 12px;border-radius:8px;border:1px solid rgba(30,42,61,0.25);background:rgba(7,11,20,0.25);display:grid;grid-template-columns:220px 1fr;gap:8px;align-items:start;">
+            <code style="color:#7dd3fc;font-size:12px;">MONDAY_COLUMN_OBSERVACAO</code>
+            <span style="color:#94a3b8;font-size:12px;">ID da coluna de observa&ccedil;&otilde;es (opcional).</span>
+        </div>
+    </div>
+</section>
+
 {% for plataforma in plataformas %}
 <section class="panel integration-platform-section">
     <div class="platform-card-header">

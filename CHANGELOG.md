@@ -9,6 +9,8 @@ e este projeto segue [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Adicionado
 
+- Acabamento visual para uso real (`FECHAMENTO-USO-REAL-OCR-01A`): melhora labels visuais de status sem alterar valores internos; adiciona tags coloridas sutis para status de documentos e integrações; corrige exibição de status técnico cru em telas de integração; melhora diferenciação visual entre simulação e envio real Monday; adiciona guia visual de configuração OCR + Monday; cria documentação de integração OCR-LEITOR + Monday; não altera banco, parser, OCR pipeline, conectores ou envio real.
+
 - Proteção CSRF nos formulários POST do painel web (`SEGURANCA-OCR-01B`): adiciona proteção CSRF manual sem dependências; injeta token CSRF nos templates com formulários; mantém API de entrada automatizada isenta para não quebrar integrações por Bearer; adiciona testes de proteção CSRF; não altera conectores, banco, parser, OCR pipeline, scripts ou envio Monday real.
 
 - Hardening inicial de login e sessão (`SEGURANCA-OCR-01A`): remove fallback fixo inseguro da secret key do painel web; adiciona timeout de sessão; reforça configurações de cookie de sessão; adiciona rate limit simples no login; adiciona testes de autenticação e hardening inicial; não altera conectores, banco, parser, OCR pipeline ou envio Monday.

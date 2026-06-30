@@ -19,7 +19,7 @@
     <div class="integration-header">
         <div>
             <h2>Documentos pendentes de integra&ccedil;&atilde;o</h2>
-            <p class="muted">Status: <strong>pendente_integracao</strong></p>
+            <p class="muted">Status: <strong>{{ status_label('pendente_integracao') }}</strong></p>
         </div>
         <span class="integration-count">{{ documentos|length }} pendente(s)</span>
     </div>
@@ -41,7 +41,7 @@
                             </div>
 
                             <div class="integration-status">
-                                <span class="badge">{{ doc.status }}</span>
+                                <span class="badge status-{{ doc.status }}">{{ status_label(doc.status) }}</span>
                             </div>
                         </div>
 
@@ -81,12 +81,12 @@
                             {% if doc.revisado %}
                             <form method="post" action="/integracoes/documentos/{{ doc.id }}/monday-dryrun" class="inline-form">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button class="btn secondary compact-btn" type="submit">Simular Monday</button>
+                                <button class="btn secondary compact-btn btn-simular-monday" type="submit">Simular Monday</button>
                             </form>
                             <form method="post" action="/integracoes/documentos/{{ doc.id }}/enviar-monday" class="inline-form" onsubmit="return confirm('Confirmar envio REAL para Monday?');">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="confirmar" value="sim">
-                                <button class="btn compact-btn" type="submit">Enviar para Monday</button>
+                                <button class="btn compact-btn btn-enviar-monday" type="submit">Enviar para Monday</button>
                             </form>
                             {% else %}
                             <span class="muted">Documento precisa de revis&atilde;o antes do envio.</span>

@@ -81,7 +81,7 @@
             {% for tentativa in ultimas_tentativas %}
                 <article class="dashboard-event">
                     <div>
-                        <span class="badge badge-{{ tentativa.status }}">{{ tentativa.status }}</span>
+                        <span class="badge status-{{ tentativa.status }}">{{ status_label(tentativa.status) }}</span>
                     </div>
 
                     <div>
