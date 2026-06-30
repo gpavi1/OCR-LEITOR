@@ -15,7 +15,7 @@ APP_PATH = BASE_DIR / "web" / "app.py"
 
 def test_integracoes_condicional_revisado_para_simular():
     conteudo = INTEGRACOES_HTML.read_text(encoding="utf-8")
-    assert "{% if doc.revisado %}" in conteudo
+    assert "doc.revisado and v.get(\"pode_simular\")" in conteudo
 
 
 def test_integracoes_condicional_revisado_para_enviar():

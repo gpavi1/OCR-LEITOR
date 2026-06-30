@@ -74,21 +74,71 @@
                         </div>
                     </div>
 
+                    {% set v = validacoes_integracao.get(doc.id, {}) %}
+                    <div class="integration-validation-card">
+                        <h4>Pronto para integrar?</h4>
+                        <div class="validation-grid">
+                            <div class="validation-item">
+                                <span class="validation-label">Configura&ccedil;&atilde;o Monday</span>
+                                <span class="validation-value {% if v.get('config_ok') %}status-ok{% else %}status-nok{% endif %}">
+                                    {{ "Pronta" if v.get("config_ok") else "Incompleta" }}
+                                </span>
+                            </div>
+                            <div class="validation-item">
+                                <span class="validation-label">Simula&ccedil;&atilde;o</span>
+                                <span class="validation-value {% if v.get('pode_simular') %}status-ok{% else %}status-nok{% endif %}">
+                                    {{ "Liberada" if v.get("pode_simular") else "Bloqueada" }}
+                                </span>
+                            </div>
+                            <div class="validation-item">
+                                <span class="validation-label">Envio real</span>
+                                <span class="validation-value {% if v.get('pode_enviar') %}status-ok{% else %}status-nok{% endif %}">
+                                    {{ "Liberado" if v.get("pode_enviar") else "Bloqueado" }}
+                                </span>
+                            </div>
+                        </div>
+                        {% if v.get("bloqueios") %}
+                        <div class="validation-details">
+                            <strong>Bloqueios:</strong>
+                            <ul>
+                            {% for b in v["bloqueios"] %}
+                                <li>{{ b }}</li>
+                            {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                        {% if v.get("avisos") %}
+                        <div class="validation-details">
+                            <strong>Avisos:</strong>
+                            <ul>
+                            {% for a in v["avisos"] %}
+                                <li>{{ a }}</li>
+                            {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+
                     <div class="integration-actions">
                         <div class="integration-action-row">
                             <a class="btn secondary" href="/documentos/{{ doc.id }}">ver documento</a>
                             <a class="btn secondary" href="/exportar/documentos/{{ doc.id }}.csv">CSV</a>
-                            {% if doc.revisado %}
+                            {% if doc.revisado and v.get("pode_simular") %}
                             <form method="post" action="/integracoes/documentos/{{ doc.id }}/monday-dryrun" class="inline-form">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button class="btn secondary compact-btn btn-simular-monday" type="submit">Simular Monday</button>
                             </form>
+                            {% endif %}
+                            {% if doc.revisado and v.get("pode_enviar") %}
                             <form method="post" action="/integracoes/documentos/{{ doc.id }}/enviar-monday" class="inline-form" onsubmit="return confirm('Confirmar envio REAL para Monday?');">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="confirmar" value="sim">
                                 <button class="btn compact-btn btn-enviar-monday" type="submit">Enviar para Monday</button>
                             </form>
-                            {% else %}
+                            {% elif doc.revisado and not v.get("pode_enviar") %}
+                            <span class="muted">Envio real bloqueado &mdash; veja checklist.</span>
+                            {% endif %}
+                            {% if not doc.revisado %}
                             <span class="muted">Documento precisa de revis&atilde;o antes do envio.</span>
                             {% endif %}
                         </div>

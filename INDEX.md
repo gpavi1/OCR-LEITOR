@@ -239,6 +239,9 @@
 **Acabamento visual para uso real (FECHAMENTO-USO-REAL-OCR-01A)**
 → Labels amigáveis de status; tags coloridas sutis; correção de status técnico cru; diferenciação visual Simular vs Enviar Monday; guia de integração OCR + Monday.
 
+**Validação operacional da integração Monday (VALIDACAO-INTEGRACAO-OPERACIONAL-OCR-01)**
+→ Validador operacional central da integração Monday, checklist de prontidão, bloqueio de envio real quando config/documento/duplicidade não estão seguros, guia de validação com cliente.
+
 **Desenvolver o projeto**
 → [copilot-instructions.md](copilot-instructions.md)
 

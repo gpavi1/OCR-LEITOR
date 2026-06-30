@@ -24,6 +24,7 @@ from exportacao.json_validado import exportar_documento_revisado
 from exportacao.markdown_relatorio import gerar_markdown_documento_revisado
 from conectores.monday_dryrun import gerar_dryrun_monday
 from conectores.monday_envio import enviar_documento_monday
+from services.validador_integracao_monday import validar_integracao_monday
 
 
 app = Flask(__name__)
@@ -292,8 +293,10 @@ def _validar_duplicidade_monday(documento_id):
         SELECT id
         FROM integracao_tentativas
         WHERE documento_id = %s
-          AND status = 'monday_envio_sucesso'
-          AND destino_externo_id IS NOT NULL
+          AND (
+            status = 'monday_envio_sucesso'
+            OR (destino_externo_id IS NOT NULL AND destino_externo_id != '')
+          )
         LIMIT 1
     """, (documento_id,))
     return existente is not None
@@ -737,9 +740,28 @@ def integracoes():
         LIMIT 100
     """)
 
+    token, board_id, mapa_colunas = _config_monday_envio()
+
+    validacoes_integracao = {}
+    for doc in documentos:
+        tentativas = fetch_all("""
+            SELECT status, destino_externo_id
+            FROM integracao_tentativas
+            WHERE documento_id = %s
+            ORDER BY criado_em DESC
+        """, (doc["id"],))
+        validacoes_integracao[doc["id"]] = validar_integracao_monday(
+            documento=doc,
+            token=token,
+            board_id=board_id,
+            mapa_colunas=mapa_colunas,
+            tentativas=tentativas,
+        )
+
     return render_template(
         "integracoes.html",
-        documentos=documentos
+        documentos=documentos,
+        validacoes_integracao=validacoes_integracao,
     )
 
 
@@ -939,6 +961,34 @@ def simular_monday_documento(documento_id):
     if not documento:
         abort(404)
 
+    token, board_id, mapa_colunas = _config_monday_envio()
+    tentativas = fetch_all("""
+        SELECT status, destino_externo_id
+        FROM integracao_tentativas
+        WHERE documento_id = %s
+        ORDER BY criado_em DESC
+    """, (documento_id,))
+
+    validacao = validar_integracao_monday(
+        documento=documento,
+        token=token,
+        board_id=board_id,
+        mapa_colunas=mapa_colunas,
+        tentativas=tentativas,
+    )
+
+    if not validacao["pode_simular"]:
+        msg = "; ".join(validacao["bloqueios"])
+        flash(f"Simulacao bloqueada: {msg}", "warning")
+        return redirect(url_for("historico_integracoes"))
+
+    if not validacao["config_ok"]:
+        flash(
+            "Simulacao permitida. "
+            "Envio real segue bloqueado ate concluir a configuracao Monday.",
+            "warning",
+        )
+
     integracao_id = _obter_integracao_dryrun(documento.get("cliente_id") or 0)
 
     try:
@@ -999,6 +1049,32 @@ def enviar_monday_documento(documento_id):
         return redirect(url_for("documento_detalhe", documento_id=documento_id))
 
     token, board_id, mapa_colunas = _config_monday_envio()
+
+    tentativas = fetch_all("""
+        SELECT status, destino_externo_id
+        FROM integracao_tentativas
+        WHERE documento_id = %s
+        ORDER BY criado_em DESC
+    """, (documento_id,))
+
+    validacao = validar_integracao_monday(
+        documento=documento,
+        token=token,
+        board_id=board_id,
+        mapa_colunas=mapa_colunas,
+        tentativas=tentativas,
+    )
+
+    if not validacao["pode_enviar"]:
+        msg = "; ".join(validacao["bloqueios"])
+        proximos = " ".join(validacao["proximos_passos"])
+        flash(
+            f"Envio bloqueado: {msg} "
+            f"Corrija antes de tentar novamente. {proximos}",
+            "warning",
+        )
+        return redirect(url_for("documento_detalhe", documento_id=documento_id))
+
     integracao_id = _obter_integracao_monday_envio(
         documento.get("cliente_id") or 0
     )
