@@ -242,6 +242,9 @@
 **Validação operacional da integração Monday (VALIDACAO-INTEGRACAO-OPERACIONAL-OCR-01)**
 → Validador operacional central da integração Monday, checklist de prontidão, bloqueio de envio real quando config/documento/duplicidade não estão seguros, guia de validação com cliente.
 
+**Configurador seguro de ambiente (CONFIGURADOR-PLATAFORMA-SEGURO-OCR-01)**
+→ Assistente seguro para configurar ambiente local: Monday, Web e MySQL.
+
 **Desenvolver o projeto**
 → [copilot-instructions.md](copilot-instructions.md)
 

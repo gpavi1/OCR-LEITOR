@@ -135,6 +135,16 @@ def opcao_preparar_pastas():
     executar_comando(f'"{py}" "{script}"')
 
 
+def opcao_configurar_ambiente():
+    py = python_do_projeto()
+    script = str(BASE_DIR / "scripts" / "configurar_ambiente.py")
+    if not Path(script).is_file():
+        print("Script configurar_ambiente.py nao encontrado.")
+        return
+    print("Abrindo configurador seguro de ambiente...")
+    executar_comando(f'"{py}" "{script}"')
+
+
 def opcao_iniciar_web():
     bat = str(BASE_DIR / "INICIAR_WEB_LOCAL.bat")
     if not Path(bat).is_file():
@@ -236,16 +246,17 @@ OPCOES = [
     ("4", "Validar Tesseract", opcao_validar_tesseract),
     ("5", "Validar MySQL", opcao_validar_mysql),
     ("6", "Preparar pastas operacionais", opcao_preparar_pastas),
-    ("7", "Iniciar painel web local", opcao_iniciar_web),
-    ("8", "Iniciar OCR 24h local", opcao_iniciar_ocr_24h),
-    ("9", "Abrir health local", opcao_health),
-    ("10", "Abrir configuracao de integracoes", opcao_config_integracoes),
-    ("11", "Rodar testes rapidos", opcao_testes_rapidos),
-    ("12", "Rodar testes completos", opcao_testes_completos),
-    ("13", "Limpar ambiente de teste", opcao_limpar_ambiente),
-    ("14", "Reset banco de teste", opcao_reset_banco),
-    ("15", "Gerar release limpa", opcao_gerar_release),
-    ("16", "Sair", None),
+    ("7", "Configurar ambiente (Monday + Web + MySQL)", opcao_configurar_ambiente),
+    ("8", "Iniciar painel web local", opcao_iniciar_web),
+    ("9", "Iniciar OCR 24h local", opcao_iniciar_ocr_24h),
+    ("10", "Abrir health local", opcao_health),
+    ("11", "Abrir configuracao de integracoes", opcao_config_integracoes),
+    ("12", "Rodar testes rapidos", opcao_testes_rapidos),
+    ("13", "Rodar testes completos", opcao_testes_completos),
+    ("14", "Limpar ambiente de teste", opcao_limpar_ambiente),
+    ("15", "Reset banco de teste", opcao_reset_banco),
+    ("16", "Gerar release limpa", opcao_gerar_release),
+    ("17", "Sair", None),
 ]
 
 
